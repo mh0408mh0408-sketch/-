@@ -457,6 +457,53 @@
     .rule-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.82rem; }
     .rule-table th, .rule-table td { padding: 6px; border-bottom: 1px solid var(--card-border); text-align: left; }
 
+    .topic-choices {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .topic-choice-card {
+      background: #0f172a;
+      border: 2px solid var(--card-border);
+      border-radius: 10px;
+      padding: 11px 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .topic-choice-card:hover {
+      border-color: #64748b;
+    }
+    .topic-choice-card.active {
+      border-color: var(--accent-gold);
+      background: rgba(245, 158, 11, 0.12);
+    }
+    .topic-choice-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: #334155;
+      color: var(--text-main);
+      font-size: 0.75rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .topic-choice-card.active .topic-choice-num {
+      background: var(--accent-gold);
+      color: #0f172a;
+    }
+    .topic-choice-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
     .hidden { display: none !important; }
 
     @media (max-width: 560px) {
@@ -609,12 +656,13 @@
     </p>
 
     <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
-      <button id="btnRandomTopic" class="btn btn-secondary btn-sm">🎲 ランダムにお題を変える</button>
+      <button id="btnRandomTopic" class="btn btn-secondary btn-sm">🎲 ランダム3問を引き直す</button>
       <button id="btnToggleCustomTopic" class="btn btn-secondary btn-sm">✏️ お題・選択肢を自由入力する</button>
     </div>
 
     <div id="presetTopicBox">
-      <select id="selectPresetTopic"></select>
+      <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:6px;">👇 ランダムに選ばれた3つのお題から1つ選んでください</div>
+      <div id="presetTopicChoices" class="topic-choices"></div>
     </div>
 
     <div id="customTopicBox" class="hidden" style="background:#0f172a; padding:12px; border-radius:10px; margin-bottom:12px;">
@@ -828,7 +876,37 @@
     { title: "最後の晩餐で食べるならどのジャンル？", options: ["最高級の焼肉・ステーキ", "回らない特上寿司", "実家の手作りご飯・味噌汁", "こだわりの卵かけご飯（TKG）", "濃厚豚骨ラーメン", "焼きたての本格ピザ＆パスタ", "母のカレーライス", "豪華なフルーツパフェ"] },
     { title: "旅行に行くとき一番重視するポイントは？", options: ["現地の絶品グルメ・食べ歩き", "ホテルや旅館の豪華さ・温泉", "有名な観光名所・歴史巡り", "テーマパーク・アクティビティ", "移動の快適さ・スケジュール余裕", "旅費の安さ・コスパ", "一緒に行くメンバーとの会話", "写真映えする絶景スポット"] },
     { title: "小学生の頃に1日だけ戻れたら何をしたい？", options: ["放課後に友達と暗くなるまで遊ぶ", "給食をおかわりじゃんけんで食べる", "夏休みの秘密基地づくり", "当時の先生や友達に会いに行く", "将来の自分に投資のメモを残す", "運動会や学芸会を全力で楽しむ", "駄菓子屋で大人買いする", "何も考えずにお昼寝する"] },
-    { title: "友達や他人に「これだけはされたくない」ことは？", options: ["約束や時間を連絡なしで破られる", "秘密や相談事を他人にバラされる", "マウンティング・自慢話をされる", "不機嫌を態度に出して気を遣わせる", "借りたお金や物を返さない", "スマホばかり見て話を聞かない", "人の趣味や好きなものを否定する", "店員さんへの態度が横柄"] }
+    { title: "友達や他人に「これだけはされたくない」ことは？", options: ["約束や時間を連絡なしで破られる", "秘密や相談事を他人にバラされる", "マウンティング・自慢話をされる", "不機嫌を態度に出して気を遣わせる", "借りたお金や物を返さない", "スマホばかり見て話を聞かない", "人の趣味や好きなものを否定する", "店員さんへの態度が横柄"] },
+    { title: "朝起きたら一番最初にやりたい理想のルーティンは？", options: ["淹れたてのコーヒー・紅茶を飲む", "カーテンを開けて朝日を浴びる", "好きな音楽やラジオを流す", "ゆっくりストレッチ・ヨガ", "豪華な朝ごはんを食べる", "二度寝してギリギリまで布団にいる", "朝シャワー・朝風呂で目を覚ます", "SNSやニュースをチェックする"] },
+    { title: "一生に一度はやってみたい「夢の体験」は？", options: ["オーロラを生で見に行く", "宇宙旅行で地球を眺める", "ファーストクラスで世界一周", "スカイダイビングに挑戦", "無人島を1週間貸し切る", "豪華客船でクルーズ旅", "満員のドームでライブステージに立つ", "サバンナで野生動物ツアー"] },
+    { title: "外食でメニューを選ぶとき一番決め手になるのは？", options: ["「期間限定・季節限定」の文字", "そのお店の看板・人気No.1メニュー", "普段家では作れない料理", "とにかくお肉・ガッツリ系", "価格の安さ・コスパの良さ", "写真や見た目のインパクト", "野菜や栄養バランスの良さ", "直感で3秒以内に目に入ったもの"] },
+    { title: "もし1週間だけ別の生き物になれるなら？", options: ["大空を自由に飛ぶワシ・タカ", "お金持ちの家で飼われている猫", "広い海を泳ぐイルカ", "のんびり笹を食べるパンダ", "百獣の王ライオン", "深海を探検できるダイオウイカ", "花の蜜を集めるミツバチ", "みんなに可愛がられるゴールデンレトリバー"] },
+    { title: "ストレスが溜まったときの一番の発散法は？", options: ["好きなものを爆食いする", "ひたすら泥のように眠る", "カラオケで全力熱唱する", "友達に電話やLINEで話を聞いてもらう", "ゲームや映画に没頭して忘れる", "筋トレやランニングで汗を流す", "サウナや温泉でぼーっとする", "ネットショッピングで散財する"] },
+    { title: "スマホに1つだけアプリ（機能）を残せるなら？", options: ["LINE・連絡ツール", "YouTube・動画アプリ", "X（旧Twitter）などのSNS", "マップ・乗換案内", "カメラ・写真フォルダ", "音楽ストリーミング", "ブラウザ（検索機能）", "お気に入りのゲーム"] },
+    { title: "自分の家にあったら最高に嬉しい設備・部屋は？", options: ["大画面プロジェクター付きシアタールーム", "本格的な自宅サウナ＆水風呂", "壁一面の巨大な本棚・マンガ部屋", "防音完備のゲーム・音楽スタジオ", "屋上テラス・BBQスペース", "猫や犬と遊べる専用ルーム", "バーカウンター付きキッチン", "ウォークインクローゼット（衣装部屋）"] },
+    { title: "映画やアニメの世界に入れるならどのジャンル？", options: ["魔法学園ファンタジー", "近未来SF・サイバーパンク", "青春ラブコメ・学園もの", "謎解きミステリー・探偵もの", "宇宙開拓・スペースオペラ", "ほのぼの日常・スローライフ", "巨大ロボット・メカバトル", "海賊・大航海アドベンチャー"] },
+    { title: "人から言われて一番嬉しい褒め言葉は？", options: ["「一緒にいると落ち着く・楽しい」", "「センスがいいね・おしゃれ」", "「頭がいい・回転が速いね」", "「優しい・気配りがすごい」", "「笑顔が素敵・かっこいい/可愛い」", "「頼りになる・仕事ができる」", "「話が面白い・ユーモアがある」", "「努力家だね・尊敬する」"] },
+    { title: "寒い冬に食べたくなる「最強のあったかグルメ」は？", options: ["具だくさんの寄せ鍋・キムチ鍋", "熱々のグラタン・ドリア", "味が染みたおでん", "すき焼き・しゃぶしゃぶ", "濃厚シチュー＆焼きたてパン", "激辛の麻婆豆腐・担々麺", "焼き芋・肉まん", "豚汁と炊きたてのご飯"] },
+    { title: "夏のイベント・思い出で一番ワクワクするものは？", options: ["夜空に上がる花火大会", "海やプールで水遊び", "高原や川辺でキャンプ・BBQ", "夏祭り・盆踊りの屋台巡り", "クーラーの効いた部屋でアイス＆ゲーム", "野外フェス・音楽ライブ", "スイカ割り＆流しそうめん", "夜の肝試し・怪談話"] },
+    { title: "もし自分がYouTuber・配信者になるなら何系？", options: ["ゲーム実況・eスポーツ系", "全国の絶品グルメ・大食い系", "旅行・秘境探検Vlog系", "料理・おつまみレシピ系", "DIY・部屋づくり・ガジェット系", "雑談・お悩み相談ラジオ系", "検証・やってみた企画系", "ペット・動物癒やし系"] },
+    { title: "1日体験でアルバイトをするならどれをやってみたい？", options: ["テーマパークのキャスト", "おしゃれなカフェのバリスタ", "動物園・水族館の飼育員", "映画やライブの運営スタッフ", "パン屋さん・ケーキ屋さん", "本屋さん・図書館スタッフ", "ゲームのデバッグ（テストプレイ）", "リゾートホテルの住み込みスタッフ"] },
+    { title: "寝る前の「至福のひととき」といえば？", options: ["布団の中でスマホ・動画を見る", "お気に入りのマンガや小説を読む", "ホットミルクやハーブティーを飲む", "照明を暗くして音楽・ASMRを聴く", "ストレッチやマッサージで体をほぐす", "明日の楽しみな予定を妄想する", "ペットやぬいぐるみを抱きしめる", "湯船にゆっくり浸かってすぐ寝る"] },
+    { title: "プレゼントでもらって一番嬉しいジャンルは？", options: ["自分では買わない高級なお菓子・グルメ", "Amazonギフト券などの選べるギフト", "入浴剤やタオルなどのリラックス雑貨", "ワイヤレスイヤホン等の便利ガジェット", "手紙やメッセージ入りのアルバム", "一緒に行ける食事や旅行のチケット", "自分の趣味を完璧に理解したアイテム", "おしゃれなマグカップ・タンブラー"] },
+    { title: "長距離のドライブや新幹線で一番欠かせないものは？", options: ["ノリノリになれる音楽プレイリスト", "眠気覚ましのコーヒー・エナジードリンク", "つまみやすいお菓子・グミ・ガム", "ダウンロード済みの映画やアニメ", "ネックピロー・アイマスク", "盛り上がるトークテーマ・しりとり", "ご当地の駅弁・サービスエリア飯", "モバイルバッテリー＆充電ケーブル"] },
+    { title: "新しい街に引っ越したら、家の近くに一番欲しい施設は？", options: ["品揃え抜群の大型スーパー", "24時間営業のコンビニ", "居心地のいい個人経営カフェ", "大きな公園・散歩コース", "サウナ・スーパー銭湯", "美味しいラーメン屋・定食屋", "大型書店・図書館", "ドラッグストア・100円ショップ"] },
+    { title: "魔法のランプの魔人に「日常のプチ願い」を1つ叶えてもらうなら？", options: ["毎日3時間だけ睡眠で全回復する体", "何を食べても絶対に太らない体質", "部屋の掃除と洗濯が自動で終わる魔法", "世界中の言語がペラペラになる能力", "一生蚊に刺されない＆虫が出ない結界", "満員電車に一生乗らずに済む移動魔法", "無くした物がすぐに見つかるレーダー", "初対面の人と5分で仲良くなれる愛嬌"] },
+    { title: "お祭りの屋台で絶対に買ってしまう定番メニューは？", options: ["ソースの香りがたまらない焼きそば", "熱々とろとろのたこ焼き", "甘じょっぱいイカ焼き・とうもろこし", "パリッとしたりんご飴・いちご飴", "ふわふわのかき氷", "チョコバナナ", "ベビーカステラ", "じゃがバター・フライドポテト"] },
+    { title: "回転寿司に行って「最初の3皿」に絶対入れたいネタは？", options: ["とろけるサーモン・炙りサーモン", "王道のまぐろ・中トロ", "脂が乗ったハマチ・ブリ", "ぷりぷりのエビ・甘エビ", "いくら・ウニの軍艦", "えんがわ", "玉子・茶碗蒸し", "フライドポテト・唐揚げ等のサイド"] },
+    { title: "学校や職場で「この人素敵だな」と尊敬する瞬間は？", options: ["トラブルが起きても冷静に対処しているとき", "誰も見ていないところで雑用や片付けをしているとき", "分からないことを素直に質問・感謝できるとき", "周りの人の良いところを見つけて褒めているとき", "自分の意見をはっきり言いつつ相手も尊重するとき", "どんな相手にも態度を変えず礼儀正しいとき", "難しい仕事を圧倒的なスピードで終わらせたとき", "ユーモアでピリピリした空気を和ませたとき"] },
+    { title: "雨の日の休日に、家でゆっくり楽しむなら？", options: ["溜まっていた映画やドラマを一気見", "じっくり時間をかけた煮込み料理・お菓子作り", "部屋の模様替え・断捨離", "友達とオンラインでボドゲやゲーム", "雨音を聞きながら読書・昼寝", "普段やらない場所の徹底掃除", "イラスト・音楽・ブログなどの創作活動", "お風呂にバスソルトを入れて長風呂"] },
+    { title: "居酒屋や宅飲みで「乾杯の最初に絶対頼みたい」一品は？", options: ["とりあえず枝豆・冷やしトマト", "ジューシーな鶏の唐揚げ", "サクサクのフライドポテト", "お刺身の盛り合わせ", "焼き鳥の盛り合わせ", "だし巻き卵・厚焼き玉子", "シーザーサラダ・チョレギサラダ", "たこわさ・チャンジャ等の珍味"] },
+    { title: "ロボットやAIに「自分の代わりに全部やってほしい」ことは？", options: ["毎日の献立決めと料理・皿洗い", "お風呂・トイレ・部屋の水回り掃除", "洗濯物を干して畳んでしまう作業", "確定申告や家計簿などのお金の管理", "朝のゴミ出しと段ボールまとめ", "面倒なメール返信やスケジュール調整", "買い出しと重い荷物の運搬", "肩こり・腰痛の本格マッサージ"] },
+    { title: "パン屋さんに行ったらついついトレイに乗せてしまうパンは？", options: ["焼きたてサクサクのクロワッサン", "牛肉ゴロゴロの揚げたてカレーパン", "外はカリッと中はふわっとしたメロンパン", "ソーセージやベーコンの惣菜パン", "たっぷり卵のたまごサンド・カツサンド", "濃厚なクリームパン・チョココロネ", "ガーリックフランス・明太フランス", "モチモチの米粉パン・ベーグル"] },
+    { title: "温泉旅館に泊まったときの一番の楽しみは？", options: ["満天の星空が見える露天風呂", "部屋で味わう豪華な懐石料理・ビュッフェ", "浴衣を着て温泉街をそぞろ歩き", "風呂上がりのコーヒー牛乳・卓球", "ふかふかの布団でゴロゴロ雑談", "朝の澄んだ空気の中で入る朝風呂", "マッサージチェアで全身リラックス", "お土産コーナーで地元の名産品選び"] },
+    { title: "子どもの頃に密かに憧れていたもの・やってみたかったことは？", options: ["秘密基地を本格的に作って泊まる", "ホールケーキを1人で丸ごと食べる", "デパートや遊園地に夜中こっそり残る", "魔法少女や変身ヒーローになって戦う", "空飛ぶ絨毯やほうきで学校へ行く", "おもちゃ屋さんの棚を端から端まで買う", "巨大なプリンやゼリーのお風呂に入る", "探偵になって学校の七不思議を解き明かす"] },
+    { title: "カフェに入ったとき一番頼みがちなメニュー・過ごし方は？", options: ["こだわりのハンドドリップコーヒー", "甘いキャラメルラテ・フラペチーノ系", "季節のケーキ・タルトと紅茶のセット", "厚切りトーストやホットサンドの軽食", "抹茶ラテ・ほうじ茶ラテ", "クリームソーダ・レモネード", "イヤホンをして作業や勉強に集中", "窓際の席で人間観察やぼーっとする"] },
+    { title: "初対面の人と話すとき、一番最初に目がいくポイントは？", options: ["目元・視線の合わせ方", "笑顔や表情の柔らかさ", "声のトーンや話し方のテンポ", "服装・ファッションの雰囲気", "髪型や清潔感", "リアクション・相槌の打ち方", "靴や持ち物のこだわり", "姿勢や立ち振る舞い"] },
+    { title: "もし地球最後の日に「最後の1日」を自由に過ごせるなら？", options: ["家族や大切な人と家でゆっくり語り合う", "今まで行ったことのない絶景を見に行く", "貯金を全部使って最高級のグルメを食べ尽くす", "友達と集まって朝までゲームやパーティー", "好きな音楽を聴きながら海辺で夕日を見る", "お世話になった人たちに感謝の連絡をする", "普段と全く変わらないルーティンで静かに過ごす", "好きなだけ寝て夢の中で過ごす"] }
   ];
 
   const LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
@@ -869,9 +947,9 @@
   }
 
   function getRoundSpec(roundNum, playerCount) {
-    const baseQuotaPerPerson = [0, 2000, 5000, 12000, 30000, 75000];
-    const baseMinBet = [0, 100, 300, 800, 2000, 5000];
-    const baseMaxBet = [0, 1000, 2500, 6000, 15000, 35000];
+    const baseQuotaPerPerson = [0, 1500, 2500, 4000, 6500, 10000];
+    const baseMinBet = [0, 100, 200, 300, 500, 1000];
+    const baseMaxBet = [0, 1000, 2000, 3500, 6000, 10000];
 
     let quotaPerPerson, minBet, maxBet;
     if (roundNum <= 5) {
@@ -879,8 +957,8 @@
       minBet = baseMinBet[roundNum];
       maxBet = baseMaxBet[roundNum];
     } else {
-      const factor = Math.pow(2.5, roundNum - 5);
-      quotaPerPerson = Math.round((baseQuotaPerPerson[5] * factor) / 1000) * 1000;
+      const factor = Math.pow(1.6, roundNum - 5);
+      quotaPerPerson = Math.round((baseQuotaPerPerson[5] * factor) / 500) * 500;
       minBet = Math.round((baseMinBet[5] * factor) / 100) * 100;
       maxBet = Math.round((baseMaxBet[5] * factor) / 500) * 500;
     }
@@ -908,6 +986,23 @@
   let parentPicks = [];
   let childPicks = [];
   let isCustomTopicMode = false;
+  let parentTopicChoices = [];
+  let selectedPresetIdx = 0;
+
+  // プリセットお題から重複なしで count 個のインデックスをランダム抽出
+  function pickRandomTopicIndices(count = 3, exclude = []) {
+    const total = PRESET_TOPICS.length;
+    const pool = [];
+    for (let i = 0; i < total; i++) {
+      if (!exclude.includes(i)) pool.push(i);
+    }
+    const source = pool.length >= count ? pool : Array.from({ length: total }, (_, i) => i);
+    for (let i = source.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [source[i], source[j]] = [source[j], source[i]];
+    }
+    return source.slice(0, count);
+  }
 
   const el = (id) => document.getElementById(id);
   el("inputPlayerName").value = myName;
@@ -956,14 +1051,8 @@
   const randomTopic = () => PRESET_TOPICS[Math.floor(Math.random() * PRESET_TOPICS.length)];
 
   function initPresetSelect() {
-    const sel = el("selectPresetTopic");
-    sel.innerHTML = "";
-    PRESET_TOPICS.forEach((t, idx) => {
-      const opt = document.createElement("option");
-      opt.value = idx;
-      opt.textContent = `${idx + 1}. ${t.title}`;
-      sel.appendChild(opt);
-    });
+    parentTopicChoices = pickRandomTopicIndices(3);
+    selectedPresetIdx = parentTopicChoices[0];
 
     const customContainer = el("customOptionsInputs");
     customContainer.innerHTML = "";
@@ -1027,7 +1116,7 @@
         turnIndex: 0,
         funds: 2000,
         debt: 0,
-        quota: 4000,
+        quota: 3000,
         minBet: 100,
         maxBet: 1000,
         players: {
@@ -1185,6 +1274,7 @@
       answerSalt: null,
       guesses: null,
       revealStep: 0,
+      settled: null,
       lastSettlement: null
     };
     // 新規ゲーム：参加者のスコアを0に。オフライン・退出者は除外
@@ -1337,6 +1427,8 @@
       data.answerSalt = null;
       data.guesses = null;
       data.revealStep = 0;
+      data.settled = null;
+      data.lastSettlement = null;
     };
 
     let next = (data.turnIndex || 0) + 1;
@@ -1408,7 +1500,7 @@
       el("modePreview").innerHTML = `
         <div>💡 <strong>人数連動バランス（現在 ${n}人）</strong></div>
         <div>・初期共通資金：<strong style="color:#34d399;">${(1000 * n).toLocaleString()} G</strong>（1,000G × 人数）</div>
-        <div>・ROUND 1 ノルマ：<strong style="color:#fbbf24;">${(2000 * n).toLocaleString()} G</strong>（2,000G × 人数）</div>
+        <div>・ROUND 1 ノルマ：<strong style="color:#fbbf24;">${(1500 * n).toLocaleString()} G</strong>（1,500G × 人数）</div>
         <div>・資金が足りなくても<strong>自動で借金して上限（MAX）までベット可能！</strong></div>
         <div>・ラウンドの終わりに「借金0 かつ ノルマ以上」ならクリア。未達ならゲームオーバー</div>`;
     } else {
@@ -1462,8 +1554,8 @@
       isCustomTopicMode = false;
       el("customTopicBox").classList.add("hidden");
       el("presetTopicBox").classList.remove("hidden");
-      const randIdx = Math.floor(Math.random() * PRESET_TOPICS.length);
-      el("selectPresetTopic").value = randIdx;
+      parentTopicChoices = pickRandomTopicIndices(3);
+      selectedPresetIdx = parentTopicChoices[0];
     }
     renderParentSetupOptions();
   }
@@ -1478,12 +1570,43 @@
       }
       return { title, options };
     } else {
-      const idx = parseInt(el("selectPresetTopic").value, 10) || 0;
-      return PRESET_TOPICS[idx];
+      return PRESET_TOPICS[selectedPresetIdx] || PRESET_TOPICS[0];
     }
   }
 
   function renderParentSetupOptions() {
+    // ランダム3問の選択肢カードを描画
+    const choicesEl = el("presetTopicChoices");
+    if (choicesEl) {
+      if (parentTopicChoices.length === 0) {
+        parentTopicChoices = pickRandomTopicIndices(3);
+        selectedPresetIdx = parentTopicChoices[0];
+      }
+      choicesEl.innerHTML = "";
+      parentTopicChoices.forEach((topicIdx, i) => {
+        const t = PRESET_TOPICS[topicIdx];
+        if (!t) return;
+        const card = document.createElement("div");
+        const isActive = !isCustomTopicMode && selectedPresetIdx === topicIdx;
+        card.className = "topic-choice-card" + (isActive ? " active" : "");
+        card.innerHTML = `
+          <span class="topic-choice-num">候補 ${i + 1}</span>
+          <span class="topic-choice-title">${esc(t.title)}</span>
+        `;
+        card.addEventListener("click", () => {
+          if (selectedPresetIdx !== topicIdx || isCustomTopicMode) {
+            isCustomTopicMode = false;
+            el("customTopicBox").classList.add("hidden");
+            el("presetTopicBox").classList.remove("hidden");
+            selectedPresetIdx = topicIdx;
+            parentPicks = [];
+            renderParentSetupOptions();
+          }
+        });
+        choicesEl.appendChild(card);
+      });
+    }
+
     const topic = getActiveParentTopic();
     el("parentTopicDisplay").textContent = topic.title;
 
@@ -1526,16 +1649,12 @@
     el("btnLockParentAnswer").disabled = parentPicks.length !== 3;
   }
 
-  el("selectPresetTopic").addEventListener("change", () => {
-    parentPicks = [];
-    renderParentSetupOptions();
-  });
   el("btnRandomTopic").addEventListener("click", () => {
     isCustomTopicMode = false;
     el("customTopicBox").classList.add("hidden");
     el("presetTopicBox").classList.remove("hidden");
-    const randIdx = Math.floor(Math.random() * PRESET_TOPICS.length);
-    el("selectPresetTopic").value = randIdx;
+    parentTopicChoices = pickRandomTopicIndices(3, parentTopicChoices);
+    selectedPresetIdx = parentTopicChoices[0];
     parentPicks = [];
     renderParentSetupOptions();
   });
@@ -1797,94 +1916,102 @@
     return { key: "miss", name: "ハズレ", mult: 0, pts: 0, badge: "yaku-miss" };
   }
 
-  // 結果確定＆精算（親のみ実行：正解を知っているのは親だけ）。
-  // 「status が betting」かつ「コミットが一致」のときだけ1回実行し、このとき初めて正解をDBに公開する。
+  // 結果発表画面への遷移（親のみ実行：正解を知っているのは親だけ）。
+  // この時点ではまだ点数や資金の精算は行わず、第1位を発表したタイミング（revealStep === 3）で精算する。
   async function transitionToResult(secret) {
     await runTransaction(roomRef, (data) => {
       if (!data) return data;
-      if (data.status !== "betting" || data.answerCommit !== secret.commit) return; // 既に精算済み等 → 中断
-
-      const playerIds = data.playerOrder || getSortedPlayerIds(data.players);
-      const parentId = playerIds[data.turnIndex || 0];
-      const childIds = playerIds.filter(pid => pid !== parentId);
-      const ans = secret.picks;
-      const guesses = data.guesses || {};
-      const isSurvival = data.mode !== "classic";
-
-      let totalBet = 0;
-      let totalPayout = 0;
-      const updatedPlayers = { ...data.players };
-
-      childIds.forEach(cid => {
-        const g = guesses[cid];
-        if (!g) return;
-        const bet = g.bet || 0;
-        const yaku = judgeYaku(g.picks, ans, isSurvival);
-        totalBet += bet;
-        totalPayout += isSurvival ? (bet * yaku.mult) : 0;
-
-        if (updatedPlayers[cid]) {
-          updatedPlayers[cid] = {
-            ...updatedPlayers[cid],
-            score: (updatedPlayers[cid].score || 0) + yaku.pts
-          };
-        }
-      });
-
-      let finalFunds = data.funds || 0;
-      let finalDebt = data.debt || 0;
-      let settlement = null;
-
-      if (isSurvival) {
-        const prevFunds = data.funds || 0;
-        const prevDebt = data.debt || 0;
-
-        let fundsAfterBet = 0;
-        let borrowedThisTurn = 0;
-        if (prevFunds >= totalBet) {
-          fundsAfterBet = prevFunds - totalBet;
-          borrowedThisTurn = 0;
-        } else {
-          fundsAfterBet = 0;
-          borrowedThisTurn = totalBet - prevFunds;
-        }
-
-        const tempDebt = prevDebt + borrowedThisTurn;
-        const totalAvailableCash = fundsAfterBet + totalPayout;
-
-        let repaidAmount = 0;
-        if (totalAvailableCash >= tempDebt) {
-          repaidAmount = tempDebt;
-          finalDebt = 0;
-          finalFunds = totalAvailableCash - tempDebt;
-        } else {
-          repaidAmount = totalAvailableCash;
-          finalDebt = tempDebt - totalAvailableCash;
-          finalFunds = 0;
-        }
-
-        settlement = {
-          prevFunds,
-          prevDebt,
-          totalBet,
-          borrowedThisTurn,
-          totalPayout,
-          repaidAmount,
-          finalFunds,
-          finalDebt
-        };
-      }
+      if (data.status !== "betting" || data.answerCommit !== secret.commit) return; // 既に遷移済み等 → 中断
 
       data.status = "result";
       data.revealStep = 0;
-      data.parentAnswer = ans;
+      data.settled = null;
+      data.parentAnswer = secret.picks;
       data.answerSalt = secret.salt;
-      data.funds = finalFunds;
-      data.debt = finalDebt;
-      data.players = updatedPlayers;
-      data.lastSettlement = settlement;
+      data.lastSettlement = null;
       return data;
     });
+  }
+
+  // 第1位発表時（revealStep === 3）に点数・資金・借金を精算する（トランザクション内で1回だけ実行）
+  function applySettlement(data) {
+    if (data.settled) return;
+    const playerIds = data.playerOrder || getSortedPlayerIds(data.players);
+    const parentId = playerIds[data.turnIndex || 0];
+    const childIds = playerIds.filter(pid => pid !== parentId);
+    const ans = data.parentAnswer || [0, 1, 2];
+    const guesses = data.guesses || {};
+    const isSurvival = data.mode !== "classic";
+
+    let totalBet = 0;
+    let totalPayout = 0;
+    const updatedPlayers = { ...data.players };
+
+    childIds.forEach(cid => {
+      const g = guesses[cid];
+      if (!g) return;
+      const bet = g.bet || 0;
+      const yaku = judgeYaku(g.picks, ans, isSurvival);
+      totalBet += bet;
+      totalPayout += isSurvival ? (bet * yaku.mult) : 0;
+
+      if (updatedPlayers[cid]) {
+        updatedPlayers[cid] = {
+          ...updatedPlayers[cid],
+          score: (updatedPlayers[cid].score || 0) + yaku.pts
+        };
+      }
+    });
+
+    let finalFunds = data.funds || 0;
+    let finalDebt = data.debt || 0;
+    let settlement = null;
+
+    if (isSurvival) {
+      const prevFunds = data.funds || 0;
+      const prevDebt = data.debt || 0;
+
+      let fundsAfterBet = 0;
+      let borrowedThisTurn = 0;
+      if (prevFunds >= totalBet) {
+        fundsAfterBet = prevFunds - totalBet;
+        borrowedThisTurn = 0;
+      } else {
+        fundsAfterBet = 0;
+        borrowedThisTurn = totalBet - prevFunds;
+      }
+
+      const tempDebt = prevDebt + borrowedThisTurn;
+      const totalAvailableCash = fundsAfterBet + totalPayout;
+
+      let repaidAmount = 0;
+      if (totalAvailableCash >= tempDebt) {
+        repaidAmount = tempDebt;
+        finalDebt = 0;
+        finalFunds = totalAvailableCash - tempDebt;
+      } else {
+        repaidAmount = totalAvailableCash;
+        finalDebt = tempDebt - totalAvailableCash;
+        finalFunds = 0;
+      }
+
+      settlement = {
+        prevFunds,
+        prevDebt,
+        totalBet,
+        borrowedThisTurn,
+        totalPayout,
+        repaidAmount,
+        finalFunds,
+        finalDebt
+      };
+    }
+
+    data.funds = finalFunds;
+    data.debt = finalDebt;
+    data.players = updatedPlayers;
+    data.lastSettlement = settlement;
+    data.settled = true;
   }
 
   // 正解が出題時のコミット（ハッシュ）と一致するか検証（親が後から答えを変えていないことの確認）
@@ -1960,7 +2087,7 @@
       tr.innerHTML = `
         <td style="font-weight:700;">${esc(p?.name || "プレイヤー")}</td>
         <td style="font-size:0.82rem;">${pickStr}</td>
-        <td>${isSurvival ? `${(g.bet || 0).toLocaleString()} G` : `${yaku.pts} pt`}</td>
+        <td>${isSurvival ? `${(g.bet || 0).toLocaleString()} G` : (step >= 3 ? `${yaku.pts} pt` : `<span style="color:var(--text-muted);">？ pt</span>`)}</td>
         <td>
           ${step >= 3
             ? `<span class="yaku-badge ${yaku.badge}">${yaku.name}</span>
@@ -2010,13 +2137,18 @@
   }
 
   // 発表ステップを進める（親とホストが同時に押しても1段階ずつしか進まないようトランザクション化）
+  // 第1位発表（revealStep が 3 になる瞬間）に精算を実行する
   el("btnNextRevealStep").addEventListener("click", async () => {
     if (!latestRoomData) return;
     const expectedStep = latestRoomData.revealStep || 0;
     await runTransaction(roomRef, (data) => {
       if (!data) return data;
       if (data.status !== "result" || (data.revealStep || 0) !== expectedStep) return; // 既に進行済み → 中断
-      data.revealStep = expectedStep + 1;
+      const nextStep = expectedStep + 1;
+      data.revealStep = nextStep;
+      if (nextStep >= 3 && !data.settled) {
+        applySettlement(data);
+      }
       return data;
     });
   });
@@ -2027,6 +2159,7 @@
     await runTransaction(roomRef, (data) => {
       if (!data) return data;
       if (data.status !== "result") return; // 二重クリック対策
+      if (!data.settled) applySettlement(data);
       advanceTurn(data);
       return data;
     });
@@ -2111,7 +2244,9 @@
       answerCommit: null,
       answerSalt: null,
       guesses: null,
-      revealStep: 0
+      revealStep: 0,
+      settled: null,
+      lastSettlement: null
     });
   });
 
@@ -2145,6 +2280,7 @@
       answerSalt: null,
       guesses: null,
       revealStep: 0,
+      settled: null,
       lastSettlement: null
     });
   });
@@ -2159,7 +2295,9 @@
       parentAnswer: null,
       answerCommit: null,
       answerSalt: null,
-      guesses: null
+      guesses: null,
+      settled: null,
+      lastSettlement: null
     };
     // 退出済みの人はロビーに戻るタイミングで片付ける
     Object.keys(latestRoomData.players || {}).forEach(pid => {
