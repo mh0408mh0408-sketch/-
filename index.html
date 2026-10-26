@@ -1,0 +1,2173 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>サンレンタン - 協力サバイバル＆合言葉ロビー</title>
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --accent-gold: #f59e0b;
+      --accent-gold-hover: #d97706;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --accent-blue: #3b82f6;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .header-logo {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .header-logo h1 {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg, #fde047, #f59e0b, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 10px rgba(245, 158, 11, 0.2);
+    }
+    .header-logo p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .status-bar {
+      background: rgba(15, 23, 42, 0.85);
+      border: 2px solid var(--accent-gold);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 8px;
+      border-radius: 8px;
+    }
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+    .stat-value {
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+    .stat-value.funds { color: #34d399; }
+    .stat-value.debt { color: #f87171; }
+    .stat-value.quota { color: #fbbf24; }
+    .stat-value.round { color: #60a5fa; }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+    .card h2 {
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+      border-left: 4px solid var(--accent-gold);
+      padding-left: 10px;
+    }
+
+    input[type="text"], input[type="number"], select, input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+      background: #0f172a;
+      color: var(--text-main);
+      font-size: 1rem;
+      margin-bottom: 12px;
+    }
+    input:focus, select:focus {
+      outline: 2px solid var(--accent-gold);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 13px 18px;
+      border-radius: 10px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      color: #0f172a;
+      background: var(--accent-gold);
+      margin-bottom: 8px;
+    }
+    .btn:hover:not(:disabled) {
+      background: var(--accent-gold-hover);
+      transform: translateY(-1px);
+    }
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .btn-secondary {
+      background: #334155;
+      color: var(--text-main);
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background: #475569;
+    }
+    .btn-green {
+      background: var(--accent-green);
+      color: #06281e;
+    }
+    .btn-green:hover:not(:disabled) {
+      background: #059669;
+      color: #fff;
+    }
+    .btn-red {
+      background: var(--accent-red);
+      color: #fff;
+    }
+    .btn-sm {
+      width: auto;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      margin-bottom: 0;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .option-card {
+      background: #0f172a;
+      border: 2px solid var(--card-border);
+      border-radius: 10px;
+      padding: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .option-card:hover {
+      border-color: #64748b;
+    }
+    .option-letter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: #334155;
+      font-weight: 800;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+    .option-text {
+      flex: 1;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .rank-badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 900;
+      margin-left: 8px;
+      flex-shrink: 0;
+    }
+    .rank-1 { background: #fbbf24; color: #000; border-color: #fbbf24 !important; }
+    .rank-2 { background: #94a3b8; color: #000; border-color: #94a3b8 !important; }
+    .rank-3 { background: #d97706; color: #fff; border-color: #d97706 !important; }
+
+    .option-card.selected-1 { border-color: #fbbf24; background: rgba(251, 191, 36, 0.12); }
+    .option-card.selected-2 { border-color: #94a3b8; background: rgba(148, 163, 184, 0.12); }
+    .option-card.selected-3 { border-color: #d97706; background: rgba(217, 119, 6, 0.12); }
+
+    .pick-slots {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .pick-slot {
+      background: #0f172a;
+      border: 2px dashed var(--card-border);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+    }
+    .pick-slot.filled {
+      border-style: solid;
+    }
+    .pick-slot-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .pick-slot-val {
+      font-size: 0.95rem;
+      font-weight: 700;
+      min-height: 1.4em;
+    }
+
+    .bet-box {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      border-radius: 12px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    .bet-quick-btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .player-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .player-chip {
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .player-chip.is-parent {
+      border-color: var(--accent-gold);
+      color: var(--accent-gold);
+      font-weight: 700;
+    }
+    .player-chip.is-done {
+      border-color: var(--accent-green);
+    }
+    .player-chip.is-off {
+      opacity: 0.5;
+      border-style: dashed;
+    }
+
+    .reveal-boxes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .reveal-box {
+      background: #0f172a;
+      border: 2px solid var(--card-border);
+      border-radius: 12px;
+      padding: 16px 10px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    .reveal-box.revealed-1 {
+      border-color: #fbbf24;
+      background: linear-gradient(180deg, rgba(251,191,36,0.2), rgba(15,23,42,0.9));
+      transform: scale(1.03);
+    }
+    .reveal-box.revealed-2 {
+      border-color: #94a3b8;
+      background: linear-gradient(180deg, rgba(148,163,184,0.2), rgba(15,23,42,0.9));
+    }
+    .reveal-box.revealed-3 {
+      border-color: #d97706;
+      background: linear-gradient(180deg, rgba(217,119,6,0.2), rgba(15,23,42,0.9));
+    }
+
+    .result-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.9rem;
+    }
+    .result-table th, .result-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--card-border);
+      text-align: left;
+    }
+    .result-table th {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+    .yaku-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.8rem;
+    }
+    .yaku-sanrentan { background: #fbbf24; color: #000; }
+    .yaku-nirentan { background: #a855f7; color: #fff; }
+    .yaku-sanrenpuku { background: #3b82f6; color: #fff; }
+    .yaku-tansho { background: #10b981; color: #000; }
+    .yaku-miss { background: #334155; color: #94a3b8; }
+
+    .settlement-card {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(59, 130, 246, 0.12));
+      border: 1px solid var(--accent-green);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+
+    /* ---- ロビー用 ---- */
+    .lobby-section {
+      background: rgba(15, 23, 42, 0.55);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .lobby-section-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent-gold);
+      color: #0f172a;
+      font-size: 0.8rem;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    .room-id-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: #0f172a;
+      border: 2px dashed var(--accent-gold);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+    }
+    .room-id-value {
+      font-size: 1.6rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: var(--accent-gold);
+      word-break: break-all;
+    }
+    .mode-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .mode-card {
+      background: #0f172a;
+      border: 2px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .mode-card:hover { border-color: #64748b; }
+    .mode-card.active {
+      border-color: var(--accent-gold);
+      background: rgba(245, 158, 11, 0.1);
+    }
+    .mode-card.locked { cursor: default; }
+    .mode-card.locked:not(.active) { opacity: 0.45; }
+    .mode-card-title { font-weight: 800; margin-bottom: 4px; }
+    .mode-card-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+    .badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 1px 7px;
+      border-radius: 999px;
+      background: #334155;
+      color: var(--text-main);
+    }
+    .badge-host { background: var(--accent-gold); color: #0f172a; }
+    .badge-me { background: var(--accent-blue); color: #fff; }
+    .badge-on { background: rgba(16,185,129,0.25); color: #34d399; }
+    .badge-off { background: rgba(148,163,184,0.2); color: var(--text-muted); }
+    .start-hint {
+      text-align: center;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    details.rule-details summary {
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--accent-gold);
+    }
+    .rule-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 0.82rem; }
+    .rule-table th, .rule-table td { padding: 6px; border-bottom: 1px solid var(--card-border); text-align: left; }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 560px) {
+      .reveal-boxes, .pick-slots, .mode-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header-logo">
+    <h1>🏇 サンレンタン</h1>
+    <p>親のベスト3を完璧に読み切る協力カジノ＆パーティーゲーム</p>
+  </div>
+
+  <div id="statusBar" class="status-bar hidden">
+    <div class="stat-item">
+      <span class="stat-label">ラウンド / 進行</span>
+      <span id="statRound" class="stat-value round">R1 (1/4)</span>
+    </div>
+    <div id="statFundsWrap" class="stat-item">
+      <span class="stat-label">チーム共通資金</span>
+      <span id="statFunds" class="stat-value funds">4,000 G</span>
+    </div>
+    <div id="statDebtWrap" class="stat-item">
+      <span class="stat-label">現在の借金</span>
+      <span id="statDebt" class="stat-value debt">0 G</span>
+    </div>
+    <div id="statQuotaWrap" class="stat-item">
+      <span class="stat-label">Rクリアノルマ</span>
+      <span id="statQuota" class="stat-value quota">8,000 G</span>
+    </div>
+    <div id="statBetLimitWrap" class="stat-item">
+      <span class="stat-label">賭け金 下限〜上限</span>
+      <span id="statBetLimit" class="stat-value" style="font-size:0.95rem;">100〜1,000 G</span>
+    </div>
+  </div>
+
+  <!-- ゲーム中の参加者一覧（親・ホスト・オンライン状況）と退出ボタン -->
+  <div id="playersStrip" class="card hidden" style="padding:12px 16px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+      <span style="font-size:0.8rem; color:var(--text-muted);">参加者（🎤親 / 👑ホスト / 🟢オンライン ⚪離席中）</span>
+      <button id="btnLeaveGame" class="btn btn-secondary btn-sm">退出</button>
+    </div>
+    <div id="playersStripList" class="player-list" style="margin-bottom:0;"></div>
+  </div>
+
+  <!-- ① ログイン・ルーム入室画面（合言葉対応） -->
+  <div id="viewLogin" class="card">
+    <h2>ルームに入る・作る</h2>
+    <label style="font-size:0.85rem; color:var(--text-muted);">あなたの名前</label>
+    <input type="text" id="inputPlayerName" placeholder="例：ハルト" maxlength="12">
+
+    <label style="font-size:0.85rem; color:var(--text-muted);">ルームID（半角英数字）</label>
+    <input type="text" id="inputRoomId" placeholder="例：777" maxlength="15">
+
+    <label style="font-size:0.85rem; color:var(--text-muted);">合言葉（パスワード・任意）</label>
+    <input type="password" id="inputRoomPassword" placeholder="友達と共有する合言葉（未入力でもOK）" maxlength="20">
+
+    <button id="btnJoinRoom" class="btn">ルームに入室する</button>
+
+    <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.7; margin-top:6px;">
+      💡 <strong>新しいルームID</strong>を入力すると、あなたがホストとしてルームを作成します。<br>
+      🔁 ゲーム中に回線が切れたりブラウザが落ちても、<strong>同じ名前・ルームID・合言葉</strong>で入室すれば元の席に戻れます。
+    </div>
+  </div>
+
+  <!-- ② ロビー待機画面 -->
+  <div id="viewLobby" class="card hidden">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h2 style="margin-bottom:0;">待機ロビー</h2>
+      <button id="btnLeaveRoom" class="btn btn-secondary btn-sm">退出</button>
+    </div>
+
+    <div class="room-id-box">
+      <div>
+        <div style="font-size:0.72rem; color:var(--text-muted);">ルームID（友達に教えてね）</div>
+        <div class="room-id-value" id="lobbyRoomId"></div>
+        <div id="lobbyPasswordInfo" style="font-size:0.8rem; color:var(--text-muted);" class="hidden">🔒 合言葉あり（友達に別途伝えてください）</div>
+      </div>
+      <button id="btnCopyInvite" class="btn btn-secondary btn-sm" style="margin-left:auto;">📋 招待文をコピー</button>
+    </div>
+
+    <div class="lobby-section">
+      <div class="lobby-section-title"><span class="step-num">1</span>メンバーを集める（<span id="lobbyPlayerCount">0</span>人）</div>
+      <div id="lobbyPlayerList" class="player-list"></div>
+      <div style="font-size:0.78rem; color:var(--text-muted);">※ 2人以上でスタートできます。⚪の人はオフライン（スタート時に除外されます）。</div>
+    </div>
+
+    <div class="lobby-section">
+      <div class="lobby-section-title"><span class="step-num">2</span>ゲームモード<span id="lobbyModeHostNote" class="badge" style="margin-left:4px;"></span></div>
+      <div class="mode-grid">
+        <div class="mode-card" data-mode="survival">
+          <div class="mode-card-title">🔥 協力サバイバル</div>
+          <div class="mode-card-desc">みんなで共通資金を増やしてノルマ達成を目指す。借金あり・ラウンドごとにインフレ。</div>
+        </div>
+        <div class="mode-card" data-mode="classic">
+          <div class="mode-card-title">👑 クラシック対戦</div>
+          <div class="mode-card-desc">個人ポイントで勝負。全員が2回ずつ親をやって、一番親を理解していた人が優勝。</div>
+        </div>
+      </div>
+      <div id="modePreview" style="background:#0f172a; padding:12px; border-radius:8px; font-size:0.85rem; color:var(--text-muted); margin-top:10px; line-height:1.7;"></div>
+    </div>
+
+    <details class="lobby-section rule-details">
+      <summary>📖 遊び方・役と配当を見る</summary>
+      <ol style="font-size:0.82rem; color:var(--text-muted); line-height:1.8; margin:8px 0 0 18px;">
+        <li>順番に「親」になり、お題の8択から秘密のベスト3（1位・2位・3位）を決める</li>
+        <li>子は親の好みを推理して「1位→2位→3位」を予想（サバイバルでは掛け金も決める）</li>
+        <li>結果は 3位→2位→1位 の順に発表！的中度で役が決まる</li>
+      </ol>
+      <table class="rule-table">
+        <thead><tr><th>役</th><th>条件</th><th>サバイバル</th><th>クラシック</th></tr></thead>
+        <tbody>
+          <tr><td>3連単</td><td>1・2・3位が順番通り</td><td>×10倍</td><td>5pt</td></tr>
+          <tr><td>2連単</td><td>1・2位が順番通り</td><td>×5倍</td><td>3pt</td></tr>
+          <tr><td>3連複</td><td>3つが順不同で的中</td><td>×3倍</td><td>2pt</td></tr>
+          <tr><td>単勝</td><td>1位のみ的中</td><td>×2倍</td><td>1pt</td></tr>
+          <tr><td>ハズレ</td><td>上記以外</td><td>×0（没収）</td><td>0pt</td></tr>
+        </tbody>
+      </table>
+    </details>
+
+    <div class="lobby-section" style="margin-bottom:0;">
+      <div class="lobby-section-title"><span class="step-num">3</span>ゲームスタート</div>
+      <div id="startHint" class="start-hint"></div>
+      <div id="hostSettings">
+        <button id="btnStartGame" class="btn btn-green" style="margin-bottom:0;">ゲームスタート！</button>
+      </div>
+      <div id="guestLobbyMsg" class="hidden" style="text-align:center; padding:6px; color:var(--text-muted);">
+        ホストがゲームを開始するのを待っています...
+      </div>
+    </div>
+  </div>
+
+  <!-- 観戦画面（ゲーム途中から入室した人用） -->
+  <div id="viewSpectator" class="card hidden" style="text-align:center; padding:30px 20px;">
+    <h2 style="border:none; padding:0;">👀 観戦中</h2>
+    <p id="spectatorMsg" style="color:var(--text-muted); margin-top:10px; line-height:1.8;"></p>
+    <p style="color:var(--text-muted); font-size:0.85rem; margin-top:10px;">このゲームが終わってロビーに戻る／連戦すると参加できます。</p>
+  </div>
+
+  <!-- ③ 親のお題＆ベスト3決定画面 -->
+  <div id="viewParentSetup" class="card hidden">
+    <h2>🎯 あなたが今回の「親」です！</h2>
+    <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:14px;">
+      お題を決めて、あなたの中の<strong>「1位・2位・3位」</strong>を秘密裏に選んでください。
+    </p>
+
+    <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+      <button id="btnRandomTopic" class="btn btn-secondary btn-sm">🎲 ランダムにお題を変える</button>
+      <button id="btnToggleCustomTopic" class="btn btn-secondary btn-sm">✏️ お題・選択肢を自由入力する</button>
+    </div>
+
+    <div id="presetTopicBox">
+      <select id="selectPresetTopic"></select>
+    </div>
+
+    <div id="customTopicBox" class="hidden" style="background:#0f172a; padding:12px; border-radius:10px; margin-bottom:12px;">
+      <label style="font-size:0.8rem; color:var(--text-muted);">自由入力のお題</label>
+      <input type="text" id="inputCustomTitle" placeholder="例：無人島に1つだけ持っていくなら？">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <span style="font-size:0.8rem; color:var(--text-muted);">選択肢（8個）</span>
+        <button id="btnFillPlayerNames" type="button" class="btn btn-secondary btn-sm" style="font-size:0.75rem; padding:4px 8px;">👥 参加者の名前をセット</button>
+      </div>
+      <div id="customOptionsInputs" style="display:grid; grid-template-columns:1fr 1fr; gap:6px;"></div>
+    </div>
+
+    <div style="background:#0f172a; border-left:4px solid var(--accent-blue); padding:12px; border-radius:6px; margin:12px 0;">
+      <div style="font-size:0.75rem; color:var(--text-muted);">今回のお題</div>
+      <div id="parentTopicDisplay" style="font-size:1.15rem; font-weight:800; margin-top:2px;"></div>
+    </div>
+
+    <p style="font-size:0.85rem; color:var(--accent-gold); font-weight:700;">
+      👇 下の選択肢をタップして「1位 → 2位 → 3位」の順に選んでください（もう一度タップで解除）
+    </p>
+
+    <div id="parentOptionsGrid" class="options-grid"></div>
+
+    <div class="pick-slots">
+      <div id="parentSlot1" class="pick-slot"><div class="pick-slot-title" style="color:#fbbf24;">🥇 1位</div><div class="pick-slot-val">未選択</div></div>
+      <div id="parentSlot2" class="pick-slot"><div class="pick-slot-title" style="color:#94a3b8;">🥈 2位</div><div class="pick-slot-val">未選択</div></div>
+      <div id="parentSlot3" class="pick-slot"><div class="pick-slot-title" style="color:#d97706;">🥉 3位</div><div class="pick-slot-val">未選択</div></div>
+    </div>
+
+    <button id="btnLockParentAnswer" class="btn btn-green" disabled>このベスト3で確定して出題する！</button>
+  </div>
+
+  <!-- ③-B 子が親の出題を待っている画面 -->
+  <div id="viewWaitParent" class="card hidden" style="text-align:center; padding:36px 20px;">
+    <h2 style="border:none; padding:0;">⏳ 親が出題を準備中です...</h2>
+    <p style="color:var(--text-muted); margin-top:8px;">
+      今回の親：<strong id="waitParentName" style="color:var(--accent-gold); font-size:1.1rem;"></strong> さん
+    </p>
+    <p style="font-size:0.85rem; color:var(--text-muted); margin-top:12px;">
+      親がお題と自分のベスト3を決めるまで少し待ってね！<br>
+      （親が長時間いなくなった場合は、自動で次の人が親になります）
+    </p>
+  </div>
+
+  <!-- ④ 子の予想＆ベット画面 -->
+  <div id="viewBetting" class="card hidden">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <h2 style="margin-bottom:0;">🐎 予想＆ベットタイム！</h2>
+      <span style="font-size:0.9rem; background:#0f172a; padding:6px 12px; border-radius:999px;">
+        今回の親：<strong id="betPhaseParentName" style="color:var(--accent-gold);"></strong>
+      </span>
+    </div>
+
+    <div style="background:#0f172a; border:2px solid var(--accent-blue); padding:14px; border-radius:10px; margin:14px 0;">
+      <div style="font-size:0.8rem; color:#60a5fa; font-weight:700;">📢 今回のお題</div>
+      <div id="betTopicTitle" style="font-size:1.25rem; font-weight:900; margin-top:4px;"></div>
+    </div>
+
+    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; font-size:0.78rem;">
+      <span class="yaku-badge yaku-sanrentan" id="oddsBadge3Tan">3連単 ×10倍</span>
+      <span class="yaku-badge yaku-nirentan" id="oddsBadge2Tan">2連単 ×5倍</span>
+      <span class="yaku-badge yaku-sanrenpuku" id="oddsBadge3Puku">3連複 ×3倍</span>
+      <span class="yaku-badge yaku-tansho" id="oddsBadge1Tan">単勝 ×2倍</span>
+    </div>
+
+    <div id="childBetControls">
+      <p style="font-size:0.85rem; color:var(--accent-gold); font-weight:700;">
+        👇 親が選んだと思う「1位 → 2位 → 3位」をタップして予想しよう！
+      </p>
+      <div id="childOptionsGrid" class="options-grid"></div>
+
+      <div class="pick-slots">
+        <div id="childSlot1" class="pick-slot"><div class="pick-slot-title" style="color:#fbbf24;">🥇 1位予想</div><div class="pick-slot-val">未選択</div></div>
+        <div id="childSlot2" class="pick-slot"><div class="pick-slot-title" style="color:#94a3b8;">🥈 2位予想</div><div class="pick-slot-val">未選択</div></div>
+        <div id="childSlot3" class="pick-slot"><div class="pick-slot-title" style="color:#d97706;">🥉 3位予想</div><div class="pick-slot-val">未選択</div></div>
+      </div>
+
+      <div id="betAmountSection" class="bet-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="font-weight:700; font-size:0.95rem;">💰 あなたの掛け金（ベット額）</span>
+          <span style="font-size:1.3rem; font-weight:900; color:var(--accent-gold);"><span id="displayMyBet">100</span> G</span>
+        </div>
+        <input type="range" id="sliderBetAmount" min="100" max="1000" step="100" value="100" style="width:100%; accent-color:var(--accent-gold);">
+        <div class="bet-quick-btns">
+          <button type="button" id="btnBetMin" class="btn btn-secondary btn-sm">下限 (MIN)</button>
+          <button type="button" id="btnBetHalf" class="btn btn-secondary btn-sm">中間</button>
+          <button type="button" id="btnBetMax" class="btn btn-secondary btn-sm" style="border:1px solid var(--accent-gold); color:var(--accent-gold);">🔥 上限 (MAX)</button>
+        </div>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-top:8px;">
+          ※共通資金が足りなくても、不足分は自動的に借金して上限まで賭けられます！
+        </p>
+      </div>
+
+      <button id="btnSubmitGuess" class="btn btn-green" disabled>この予想と掛け金でロックする！</button>
+    </div>
+
+    <div id="parentWatchControls" class="hidden" style="background:#0f172a; padding:16px; border-radius:10px; margin-bottom:14px;">
+      <p style="font-weight:700; color:var(--accent-gold); margin-bottom:6px;">🤫 あなたは親です！みんなの推理を見守りましょう</p>
+      <div id="parentSecretAnswerView" style="margin-top:10px; font-size:0.85rem; color:#cbd5e1;"></div>
+      <button id="btnSkipTurn" class="btn btn-secondary hidden" style="margin-top:10px;">このターンをスキップして次の親へ</button>
+    </div>
+
+    <div style="margin-top:16px;">
+      <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:6px;">みんなの予想提出状況：</div>
+      <div id="guessStatusList" class="player-list"></div>
+    </div>
+
+    <button id="btnForceReveal" class="btn btn-secondary hidden" style="margin-top:12px;">全員揃ったので結果発表へ進む！</button>
+    <p id="waitRevealMsg" class="hidden" style="font-size:0.82rem; color:var(--text-muted); margin-top:8px;">全員の予想が揃ったら、親が結果発表に進みます。</p>
+  </div>
+
+  <!-- ⑤ 結果発表＆即時精算画面 -->
+  <div id="viewResult" class="card hidden">
+    <h2>🎉 結果発表 ＆ 即時精算！</h2>
+    <div style="background:#0f172a; padding:12px; border-radius:8px; margin-bottom:14px;">
+      <span style="font-size:0.8rem; color:var(--text-muted);">親（<span id="resParentName"></span>）のお題：</span>
+      <div id="resTopicTitle" style="font-size:1.1rem; font-weight:800;"></div>
+    </div>
+
+    <div class="reveal-boxes">
+      <div id="revealBox3" class="reveal-box">
+        <div style="font-size:0.85rem; color:#d97706; font-weight:800;">🥉 第3位</div>
+        <div id="revealText3" style="font-size:1.1rem; font-weight:900; margin-top:8px;">？？？</div>
+      </div>
+      <div id="revealBox2" class="reveal-box">
+        <div style="font-size:0.85rem; color:#94a3b8; font-weight:800;">🥈 第2位</div>
+        <div id="revealText2" style="font-size:1.1rem; font-weight:900; margin-top:8px;">？？？</div>
+      </div>
+      <div id="revealBox1" class="reveal-box">
+        <div style="font-size:0.85rem; color:#fbbf24; font-weight:800;">🥇 第1位</div>
+        <div id="revealText1" style="font-size:1.1rem; font-weight:900; margin-top:8px;">？？？</div>
+      </div>
+    </div>
+
+    <div id="verifyNote" style="font-size:0.78rem; color:var(--text-muted); text-align:center;"></div>
+
+    <div id="revealControlBtns" style="margin:14px 0;">
+      <button id="btnNextRevealStep" class="btn">🥁 第3位を発表する！</button>
+    </div>
+
+    <div style="overflow-x:auto;">
+      <table class="result-table">
+        <thead>
+          <tr>
+            <th>プレイヤー</th>
+            <th>予想 (1位 → 2位 → 3位)</th>
+            <th id="thBetCol">賭け金</th>
+            <th>判定 / 配当</th>
+          </tr>
+        </thead>
+        <tbody id="resultTableBody"></tbody>
+      </table>
+    </div>
+
+    <div id="settlementBox" class="settlement-card hidden">
+      <h3 style="font-size:1.05rem; color:#34d399; margin-bottom:10px;">🏦 今回の即時精算レポート</h3>
+      <div id="settlementDetails" style="font-size:0.92rem; line-height:1.75;"></div>
+    </div>
+
+    <button id="btnNextTurn" class="btn btn-green hidden" style="margin-top:16px;">次の親のターンへ進む ➡️</button>
+  </div>
+
+  <!-- ⑥ ラウンド終了判定 / ゲームオーバー / 連戦画面 -->
+  <div id="viewRoundSummary" class="card hidden" style="text-align:center; padding:28px 20px;">
+    <h2 id="summaryTitle" style="border:none; font-size:1.8rem; padding:0;"></h2>
+    <p id="summarySubtitle" style="color:var(--text-muted); margin:10px 0 20px;"></p>
+
+    <div id="summaryStatsBox" style="background:#0f172a; border-radius:12px; padding:18px; margin-bottom:20px; text-align:left; line-height:1.9;"></div>
+
+    <div id="summaryHostActions" class="hidden">
+      <button id="btnProceedNextRound" class="btn btn-green">次のラウンドへ突入する！🔥</button>
+      <button id="btnStartRematch" class="btn btn-secondary" style="border:1px solid var(--accent-gold); color:var(--accent-gold);">🔄 スコアを引き継いで連戦（再スタート）する</button>
+      <button id="btnBackToLobby" class="btn btn-secondary">ロビーに戻る</button>
+    </div>
+    <p id="summaryGuestWait" class="hidden" style="color:var(--text-muted); font-size:0.9rem;">
+      ホストの操作を待っています...
+    </p>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, set, get, update, onValue, remove, runTransaction, onDisconnect, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD5BGDSmCFhkpdiaBNO4cyQDGSlgP70MIw",
+    authDomain: "sannrenntann-48ab6.firebaseapp.com",
+    databaseURL: "https://sannrenntann-48ab6-default-rtdb.firebaseio.com",
+    projectId: "sannrenntann-48ab6",
+    storageBucket: "sannrenntann-48ab6.firebasestorage.app",
+    messagingSenderId: "819311340515",
+    appId: "1:819311340515:web:c6b8a489822e5920274ed6",
+    measurementId: "G-H7P57S3FFK"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  const PRESET_TOPICS = [
+    { title: "無人島に1つだけ持っていくなら？", options: ["ナイフ・マルチツール", "火起こし器（ライター）", "巨大な防水タープ", "浄水器ボトル", "釣り具一式", "親友・パートナー", "大量のマンガ・本", "アコースティックギター"] },
+    { title: "結婚相手（パートナー）に一番求める条件は？", options: ["圧倒的な優しさ・包容力", "金銭感覚の一致", "笑いのツボ・ノリが合う", "料理や家事のスキル", "ルックス・見た目の好み", "安定した高収入", "一人の時間を尊重してくれる", "趣味を一緒に楽しめる"] },
+    { title: "もし超能力が1つ手に入るならどれ？", options: ["瞬間移動（テレポーテーション）", "時間を止める・戻す能力", "空を自由に飛ぶ能力", "人の心・本音が読める能力", "透明人間になれる能力", "未来予知（1週間先が見える）", "どんな怪我や病気も治す能力", "動物や植物と会話できる能力"] },
+    { title: "宝くじで10億円当たったら、まず何に使う？", options: ["豪邸・タワマンを購入する", "インデックス・高配当株に投資", "仕事や学校をすぐ辞める", "世界一周の豪華旅行へ行く", "家族や親友にプレゼントする", "誰にも言わず普段通り暮らす", "欲しかった趣味の物を爆買い", "自分のお店や会社を立ち上げる"] },
+    { title: "休日の「最高の過ごし方」といえば？", options: ["昼までぐっすり二度寝する", "友達とボードゲームや通話", "自然の中でキャンプ・BBQ", "カフェで読書やイラスト制作", "一日中ガッツリ新作ゲーム", "温泉やサウナでととのう", "美味しいグルメを食べ歩き", "部屋の片付け・模様替え"] },
+    { title: "人生で一番大切だと思うものは？", options: ["健康な体とメンタル", "気の置けない友人・仲間", "お金・経済的な自由", "家族との絆", "夢中になれる趣味・創作", "仕事や学びのやりがい", "自由な時間", "睡眠と美味しいご飯"] },
+    { title: "異世界転生したらどの職業（ポジション）になりたい？", options: ["最強の剣士・勇者", "大魔法使い（遠距離火力）", "回復・支援系の聖職者", "街でスローライフする錬金術師", "大富豪の商人ギルド長", "影から暗躍するアサシン", "モンスターを従えるテイマー", "王国の軍師・参謀"] },
+    { title: "部屋（賃貸）を選ぶときに一番譲れない条件は？", options: ["駅からの近さ（徒歩5分圏内）", "家賃の安さ・コスパ", "防音性の高さ（鉄筋コンクリート）", "広々としたキッチン・水回り", "日当たりの良さ・南向き", "コンビニやスーパーが隣にある", "高速インターネット無料", "新築・築浅の綺麗さ"] },
+    { title: "タイムマシンで1度だけ行けるならどこへ行く？", options: ["恐竜がいた白亜紀", "自分が小学生だった頃", "100年後の未来の日本", "戦国時代（織田信長の時代）", "バブル絶頂期の日本", "自分が老後を迎えた未来", "古代エジプト（ピラミッド建設時）", "昨日の夜（ロト6の番号を見に）"] },
+    { title: "コンビニでついつい買ってしまう誘惑グルメは？", options: ["レジ横のホットスナック（唐揚げ等）", "新作の限定スイーツ・プリン", "おにぎり・手巻き寿司", "ポテトチップス・スナック菓子", "アイスクリーム", "肉まん・ピザまん", "カフェラテ・チルド飲料", "カップラーメン・春雨スープ"] },
+    { title: "リーダーや先生に一番必要だと思う資質は？", options: ["誰の話も否定せず聴く傾聴力", "ピンチでも動じない決断力", "場を明るくするユーモア", "えこひいきしない公平さ", "分かりやすく言語化する説明力", "ミスを責めずフォローする器の大きさ", "率先して動く行動力", "一人ひとりの変化に気づく観察力"] },
+    { title: "最後の晩餐で食べるならどのジャンル？", options: ["最高級の焼肉・ステーキ", "回らない特上寿司", "実家の手作りご飯・味噌汁", "こだわりの卵かけご飯（TKG）", "濃厚豚骨ラーメン", "焼きたての本格ピザ＆パスタ", "母のカレーライス", "豪華なフルーツパフェ"] },
+    { title: "旅行に行くとき一番重視するポイントは？", options: ["現地の絶品グルメ・食べ歩き", "ホテルや旅館の豪華さ・温泉", "有名な観光名所・歴史巡り", "テーマパーク・アクティビティ", "移動の快適さ・スケジュール余裕", "旅費の安さ・コスパ", "一緒に行くメンバーとの会話", "写真映えする絶景スポット"] },
+    { title: "小学生の頃に1日だけ戻れたら何をしたい？", options: ["放課後に友達と暗くなるまで遊ぶ", "給食をおかわりじゃんけんで食べる", "夏休みの秘密基地づくり", "当時の先生や友達に会いに行く", "将来の自分に投資のメモを残す", "運動会や学芸会を全力で楽しむ", "駄菓子屋で大人買いする", "何も考えずにお昼寝する"] },
+    { title: "友達や他人に「これだけはされたくない」ことは？", options: ["約束や時間を連絡なしで破られる", "秘密や相談事を他人にバラされる", "マウンティング・自慢話をされる", "不機嫌を態度に出して気を遣わせる", "借りたお金や物を返さない", "スマホばかり見て話を聞かない", "人の趣味や好きなものを否定する", "店員さんへの態度が横柄"] }
+  ];
+
+  const LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
+
+  // 回線切れ・ブラウザ落ちの人を「離席扱い」にするまでの猶予（この間に戻れば何も起きない）
+  const GRACE_MS = 30000;
+
+  // innerHTML に埋め込むユーザー入力（名前・自由入力のお題）をエスケープする
+  function esc(str) {
+    return String(str ?? "").replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+
+  // ---- ハッシュ（合言葉・正解のコミット用） ----
+  function cyrb53(str, seed = 0) {
+    let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+    for (let i = 0, ch; i < str.length; i++) {
+      ch = str.charCodeAt(i);
+      h1 = Math.imul(h1 ^ ch, 2654435761);
+      h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+    h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+    h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+  }
+  async function hashText(text) {
+    if (window.crypto && window.crypto.subtle) {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+    return "c" + cyrb53(text).toString(16);
+  }
+  function randomSalt() {
+    return Array.from(crypto.getRandomValues(new Uint8Array(8))).map(b => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  function getRoundSpec(roundNum, playerCount) {
+    const baseQuotaPerPerson = [0, 2000, 5000, 12000, 30000, 75000];
+    const baseMinBet = [0, 100, 300, 800, 2000, 5000];
+    const baseMaxBet = [0, 1000, 2500, 6000, 15000, 35000];
+
+    let quotaPerPerson, minBet, maxBet;
+    if (roundNum <= 5) {
+      quotaPerPerson = baseQuotaPerPerson[roundNum];
+      minBet = baseMinBet[roundNum];
+      maxBet = baseMaxBet[roundNum];
+    } else {
+      const factor = Math.pow(2.5, roundNum - 5);
+      quotaPerPerson = Math.round((baseQuotaPerPerson[5] * factor) / 1000) * 1000;
+      minBet = Math.round((baseMinBet[5] * factor) / 100) * 100;
+      maxBet = Math.round((baseMaxBet[5] * factor) / 500) * 500;
+    }
+
+    return {
+      quota: quotaPerPerson * playerCount,
+      minBet: minBet,
+      maxBet: maxBet
+    };
+  }
+
+  let myId = localStorage.getItem("srt_player_id");
+  if (!myId) {
+    myId = "p_" + Math.random().toString(36).substring(2, 9);
+    localStorage.setItem("srt_player_id", myId);
+  }
+  let myName = localStorage.getItem("srt_player_name") || "";
+  let currentRoomId = null;
+  let roomRef = null;
+  let unsubscribeRoom = null;
+  let unsubscribePresence = null;
+  let latestRoomData = null;
+  let serverOffset = 0;
+
+  let parentPicks = [];
+  let childPicks = [];
+  let isCustomTopicMode = false;
+
+  const el = (id) => document.getElementById(id);
+  el("inputPlayerName").value = myName;
+  el("inputRoomId").value = localStorage.getItem("srt_room_id") || "";
+
+  onValue(ref(db, ".info/serverTimeOffset"), (s) => { serverOffset = s.val() || 0; });
+  const nowServer = () => Date.now() + serverOffset;
+
+  // ---- プレイヤーの状態判定 ----
+  function isOnline(p) {
+    return !!p && !!p.name && !p.left && p.online !== false;
+  }
+  // 「不在」＝退出済み、またはオフラインのまま猶予時間を過ぎた人（親やホストの代行判定に使う）
+  function isAbsent(data, pid) {
+    const p = data && data.players && data.players[pid];
+    if (!p || !p.name) return true;
+    if (p.left) return true;
+    if (p.online === false) {
+      const off = typeof p.offlineAt === "number" ? p.offlineAt : 0;
+      return nowServer() - off > GRACE_MS;
+    }
+    return false;
+  }
+
+  function getSortedPlayerIds(playersObj) {
+    if (!playersObj) return [];
+    return Object.keys(playersObj)
+      .filter(id => playersObj[id] && playersObj[id].name)
+      .sort((a, b) => (playersObj[a].joinedAt || 0) - (playersObj[b].joinedAt || 0));
+  }
+
+  // ---- 親だけが知る正解（DBには「コミット（ハッシュ）」だけを置き、答えは結果発表時に公開）----
+  const secretStorageKey = () => `srt_secret_${currentRoomId}`;
+  function loadSecret() {
+    try { return JSON.parse(localStorage.getItem(secretStorageKey())); } catch (e) { return null; }
+  }
+  function saveSecret(secret) {
+    localStorage.setItem(secretStorageKey(), JSON.stringify(secret));
+  }
+  function getValidSecret(data) {
+    const s = loadSecret();
+    return (s && data.answerCommit && s.commit === data.answerCommit) ? s : null;
+  }
+
+  const turnKeyOf = (d) => String(d.qid || `${d.round}_${d.turnIndex}`);
+  const randomTopic = () => PRESET_TOPICS[Math.floor(Math.random() * PRESET_TOPICS.length)];
+
+  function initPresetSelect() {
+    const sel = el("selectPresetTopic");
+    sel.innerHTML = "";
+    PRESET_TOPICS.forEach((t, idx) => {
+      const opt = document.createElement("option");
+      opt.value = idx;
+      opt.textContent = `${idx + 1}. ${t.title}`;
+      sel.appendChild(opt);
+    });
+
+    const customContainer = el("customOptionsInputs");
+    customContainer.innerHTML = "";
+    for (let i = 0; i < 8; i++) {
+      const inp = document.createElement("input");
+      inp.type = "text";
+      inp.id = `customOpt_${i}`;
+      inp.placeholder = `選択肢 ${LETTERS[i]}`;
+      inp.style.marginBottom = "4px";
+      inp.addEventListener("input", renderParentSetupOptions);
+      customContainer.appendChild(inp);
+    }
+    el("inputCustomTitle").addEventListener("input", renderParentSetupOptions);
+  }
+  initPresetSelect();
+
+  function showView(viewId) {
+    const views = ["viewLogin", "viewLobby", "viewSpectator", "viewParentSetup", "viewWaitParent", "viewBetting", "viewResult", "viewRoundSummary"];
+    views.forEach(v => el(v).classList.add("hidden"));
+    el(viewId).classList.remove("hidden");
+  }
+
+  // ---- ルーム入室（合言葉認証・名前一致での復帰） ----
+  el("btnJoinRoom").addEventListener("click", async () => {
+    const name = el("inputPlayerName").value.trim();
+    const roomId = el("inputRoomId").value.trim();
+    const password = el("inputRoomPassword").value;
+    if (!name || !roomId) {
+      alert("名前とルームIDを入力してください！");
+      return;
+    }
+    if (/[.#$\[\]\/]/.test(roomId)) {
+      alert("ルームIDに . # $ [ ] / は使えません。");
+      return;
+    }
+    el("btnJoinRoom").disabled = true;
+    try {
+      await joinRoom(name, roomId, password);
+    } catch (e) {
+      console.error(e);
+      alert("入室に失敗しました：" + e.message);
+    } finally {
+      el("btnJoinRoom").disabled = false;
+    }
+  });
+
+  async function joinRoom(name, roomId, password) {
+    const rRef = ref(db, `rooms/${roomId}`);
+    const snap = await get(rRef);
+    // 合言葉は平文ではなくハッシュ化して保存・照合する
+    const passHash = password ? await hashText(`${roomId}:${password}`) : "";
+
+    if (!snap.exists()) {
+      // 新規作成
+      await set(rRef, {
+        hostId: myId,
+        passwordHash: passHash,
+        mode: "survival",
+        status: "lobby",
+        round: 1,
+        turnIndex: 0,
+        funds: 2000,
+        debt: 0,
+        quota: 4000,
+        minBet: 100,
+        maxBet: 1000,
+        players: {
+          [myId]: { name: name, score: 0, joinedAt: Date.now(), online: true }
+        }
+      });
+    } else {
+      const roomData = snap.val();
+      // 合言葉チェック（旧形式の平文 password にも対応）
+      const hasPass = !!(roomData.passwordHash || roomData.password);
+      let passOk = true;
+      if (roomData.passwordHash) passOk = roomData.passwordHash === passHash;
+      else if (roomData.password) passOk = roomData.password === password;
+      if (!passOk) {
+        alert("合言葉（パスワード）が間違っています！");
+        return;
+      }
+
+      // 同じ名前の人がいれば、その席に戻る（復帰）
+      const players = roomData.players || {};
+      const sameNameId = Object.keys(players).find(id => players[id] && players[id].name === name);
+      let useId = myId;
+      if (sameNameId && sameNameId !== myId) {
+        const p = players[sameNameId];
+        const stale = p.left || p.online === false;
+        if (!stale && !hasPass) {
+          alert("その名前は今ほかの人が使っています。別の名前にしてください。");
+          return;
+        }
+        useId = sameNameId;
+      }
+
+      // 以前の自分の席（別ID）が残っていれば片付ける
+      if (useId !== myId && players[myId]) {
+        if (roomData.status === "lobby") {
+          await remove(ref(db, `rooms/${roomId}/players/${myId}`));
+        } else {
+          await update(ref(db, `rooms/${roomId}/players/${myId}`), { online: false, left: true });
+        }
+      }
+      myId = useId;
+      localStorage.setItem("srt_player_id", myId);
+
+      const myRef = ref(db, `rooms/${roomId}/players/${myId}`);
+      if (players[myId]) {
+        await update(myRef, { name: name, online: true, offlineAt: null, left: null });
+      } else {
+        await update(myRef, { name: name, score: 0, joinedAt: Date.now(), online: true, offlineAt: null, left: null });
+      }
+    }
+
+    myName = name;
+    localStorage.setItem("srt_player_name", myName);
+    localStorage.setItem("srt_room_id", roomId);
+    currentRoomId = roomId;
+    roomRef = rRef;
+
+    setupPresence();
+
+    if (unsubscribeRoom) unsubscribeRoom();
+    unsubscribeRoom = onValue(roomRef, (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
+      latestRoomData = data;
+      syncUI(data);
+    });
+  }
+
+  // 接続が切れたら自動で「オフライン」にし、再接続したら「オンライン」に戻す
+  function setupPresence() {
+    if (unsubscribePresence) unsubscribePresence();
+    const myRef = ref(db, `rooms/${currentRoomId}/players/${myId}`);
+    unsubscribePresence = onValue(ref(db, ".info/connected"), async (snap) => {
+      if (snap.val() !== true) return;
+      await onDisconnect(myRef).update({ online: false, offlineAt: serverTimestamp() });
+      await update(myRef, { name: myName, online: true, offlineAt: null, left: null });
+    });
+  }
+
+  async function leaveRoom() {
+    if (!currentRoomId) return;
+    const inLobby = latestRoomData && latestRoomData.status === "lobby";
+    if (!inLobby && !confirm("ゲーム中ですが退出しますか？\n（同じ名前・合言葉で入室すれば元の席に戻れます）")) return;
+
+    if (unsubscribePresence) { unsubscribePresence(); unsubscribePresence = null; }
+    if (unsubscribeRoom) { unsubscribeRoom(); unsubscribeRoom = null; }
+    const myRef = ref(db, `rooms/${currentRoomId}/players/${myId}`);
+    try {
+      await onDisconnect(myRef).cancel();
+      if (inLobby) {
+        await remove(myRef);
+      } else {
+        await update(myRef, { online: false, left: true, offlineAt: serverTimestamp() });
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    currentRoomId = null;
+    roomRef = null;
+    latestRoomData = null;
+    el("statusBar").classList.add("hidden");
+    el("playersStrip").classList.add("hidden");
+    showView("viewLogin");
+  }
+  el("btnLeaveRoom").addEventListener("click", leaveRoom);
+  el("btnLeaveGame").addEventListener("click", leaveRoom);
+
+  // ---- ロビー操作 ----
+  document.querySelectorAll(".mode-card").forEach(card => {
+    card.addEventListener("click", () => {
+      if (!latestRoomData || latestRoomData.hostId !== myId) return;
+      update(roomRef, { mode: card.dataset.mode });
+    });
+  });
+
+  el("btnCopyInvite").addEventListener("click", async () => {
+    const lines = [`🏇サンレンタンで遊ぼう！`, `ルームID：${currentRoomId}`];
+    if (latestRoomData && (latestRoomData.passwordHash || latestRoomData.password)) lines.push("合言葉：（別途お伝えします）");
+    if (location.protocol.startsWith("http")) lines.push(location.href.split("#")[0]);
+    try {
+      await navigator.clipboard.writeText(lines.join("\n"));
+      el("btnCopyInvite").textContent = "✅ コピーしました";
+    } catch (e) {
+      alert(lines.join("\n"));
+    }
+    setTimeout(() => { el("btnCopyInvite").textContent = "📋 招待文をコピー"; }, 2000);
+  });
+
+  el("btnStartGame").addEventListener("click", async () => {
+    if (!latestRoomData) return;
+    const allIds = Object.keys(latestRoomData.players || {});
+    const playerIds = getSortedPlayerIds(latestRoomData.players).filter(pid => isOnline(latestRoomData.players[pid]));
+    if (playerIds.length < 2) {
+      alert("2人以上（オンライン）集まってからスタートしてください！");
+      return;
+    }
+    const n = playerIds.length;
+    const initFunds = 1000 * n;
+    const spec = getRoundSpec(1, n);
+
+    const upd = {
+      status: "parent_setup",
+      round: 1,
+      turnIndex: 0,
+      playerOrder: playerIds,
+      funds: initFunds,
+      debt: 0,
+      quota: spec.quota,
+      minBet: spec.minBet,
+      maxBet: spec.maxBet,
+      qid: Date.now(),
+      currentTopic: randomTopic(),
+      parentAnswer: null,
+      answerCommit: null,
+      answerSalt: null,
+      guesses: null,
+      revealStep: 0,
+      lastSettlement: null
+    };
+    // 新規ゲーム：参加者のスコアを0に。オフライン・退出者は除外
+    allIds.forEach(pid => {
+      if (playerIds.includes(pid)) upd[`players/${pid}/score`] = 0;
+      else upd[`players/${pid}`] = null;
+    });
+    await update(roomRef, upd);
+  });
+
+  // ---- 画面同期 ----
+  function syncUI(data) {
+    const players = data.players || {};
+    const playerIds = data.playerOrder || getSortedPlayerIds(players);
+    const isHost = data.hostId === myId;
+    const isSurvival = data.mode !== "classic";
+
+    housekeeping(data);
+    renderPlayersStrip(data);
+
+    if (data.status === "lobby") {
+      el("statusBar").classList.add("hidden");
+    } else {
+      el("statusBar").classList.remove("hidden");
+      const totalTurns = playerIds.length;
+      // クラシックは全2周制：2周目は通算ターン数にオフセットを加える
+      const currentTurnNum = (isSurvival ? 0 : ((data.round || 1) - 1) * totalTurns) + (data.turnIndex || 0) + 1;
+      el("statRound").textContent = isSurvival ? `R${data.round || 1} (${currentTurnNum}/${totalTurns})` : `クラシック (${currentTurnNum}/${totalTurns * 2})`;
+
+      if (isSurvival) {
+        el("statFundsWrap").classList.remove("hidden");
+        el("statDebtWrap").classList.remove("hidden");
+        el("statQuotaWrap").classList.remove("hidden");
+        el("statBetLimitWrap").classList.remove("hidden");
+        el("statFunds").textContent = `${(data.funds || 0).toLocaleString()} G`;
+        el("statDebt").textContent = `${(data.debt || 0).toLocaleString()} G`;
+        el("statQuota").textContent = `${(data.quota || 0).toLocaleString()} G`;
+        el("statBetLimit").textContent = `${(data.minBet || 100).toLocaleString()}〜${(data.maxBet || 1000).toLocaleString()} G`;
+      } else {
+        el("statFundsWrap").classList.add("hidden");
+        el("statDebtWrap").classList.add("hidden");
+        el("statQuotaWrap").classList.add("hidden");
+        el("statBetLimitWrap").classList.add("hidden");
+      }
+    }
+
+    if (data.status === "lobby") {
+      renderLobby(data, isHost);
+      return;
+    }
+
+    // ゲーム途中から入室した人は観戦者
+    if (!playerIds.includes(myId)) {
+      showView("viewSpectator");
+      const pid = playerIds[data.turnIndex || 0];
+      el("spectatorMsg").textContent = `ゲーム進行中です。現在の親：${players[pid]?.name || "—"} さん`;
+      return;
+    }
+
+    if (data.status === "parent_setup") {
+      renderParentSetupPhase(data, playerIds);
+    } else if (data.status === "betting") {
+      renderBettingPhase(data, playerIds, isHost, isSurvival);
+    } else if (data.status === "result") {
+      renderResultPhase(data, playerIds, isHost, isSurvival);
+    } else if (data.status === "round_summary") {
+      renderRoundSummaryPhase(data, playerIds, isHost, isSurvival);
+    }
+  }
+
+  // ---- 参加者一覧（ゲーム中） ----
+  function renderPlayersStrip(data) {
+    const strip = el("playersStrip");
+    const me = data.players && data.players[myId];
+    if (data.status === "lobby" || !me) {
+      strip.classList.add("hidden");
+      return;
+    }
+    strip.classList.remove("hidden");
+    const order = data.playerOrder || [];
+    const parentId = ["parent_setup", "betting", "result"].includes(data.status) ? order[data.turnIndex || 0] : null;
+    const listEl = el("playersStripList");
+    listEl.innerHTML = "";
+    order.forEach(pid => {
+      const p = data.players[pid];
+      const off = !p || !isOnline(p);
+      const chip = document.createElement("div");
+      chip.className = "player-chip" + (pid === parentId ? " is-parent" : "") + (off ? " is-off" : "");
+      let text = (pid === parentId ? "🎤" : "") + (pid === data.hostId ? "👑" : "") + (off ? "⚪" : "🟢") + " " + (p?.name || "（退出）");
+      if (pid === myId) text += "（あなた）";
+      if (data.mode === "classic" && p) text += ` ${p.score || 0}pt`;
+      chip.textContent = text;
+      listEl.appendChild(chip);
+    });
+  }
+
+  // ---- 自動進行（親・ホストの離脱対応）。全員のクライアントが監視し、トランザクションで1回だけ実行 ----
+  let housekeeping_busy = false;
+  function needsParentSkip(data) {
+    if (!data || !["parent_setup", "betting"].includes(data.status)) return false;
+    const order = data.playerOrder || [];
+    const parentId = order[data.turnIndex || 0];
+    return !!parentId && isAbsent(data, parentId);
+  }
+
+  function housekeeping(data) {
+    if (!data || !currentRoomId || !roomRef) return;
+    const me = data.players && data.players[myId];
+    // 自分のオンライン状態が確定してから動く（復帰直後に自分を除外してしまわないように）
+    if (!me || me.online !== true || me.left) return;
+
+    // ホストが不在なら、残っている先頭の人がホストを引き継ぐ
+    if (isAbsent(data, data.hostId)) {
+      const presentIds = getSortedPlayerIds(data.players).filter(id => !isAbsent(data, id));
+      if (presentIds[0] === myId) update(roomRef, { hostId: myId });
+    }
+
+    // 親が不在なら、次の人を親にする
+    if (needsParentSkip(data) && !housekeeping_busy) {
+      housekeeping_busy = true;
+      runTransaction(roomRef, (d) => {
+        if (!d) return d;
+        if (!needsParentSkip(d)) return; // 既に対応済み
+        advanceTurn(d);
+        return d;
+      }).catch(e => console.error(e)).finally(() => { housekeeping_busy = false; });
+    }
+  }
+
+  // 定期チェック（猶予時間の経過を検知するため）
+  setInterval(() => {
+    if (!latestRoomData || !currentRoomId) return;
+    if (latestRoomData.status === "betting") {
+      syncUI(latestRoomData);
+    } else {
+      housekeeping(latestRoomData);
+      renderPlayersStrip(latestRoomData);
+    }
+  }, 5000);
+
+  // 次の親へ進める（不在の人はスキップ）。ラウンド/周回の終端も処理する
+  function advanceTurn(data) {
+    const order = data.playerOrder || getSortedPlayerIds(data.players);
+    const isSurvival = data.mode !== "classic";
+    const resetQuestion = () => {
+      data.qid = Date.now();
+      data.currentTopic = randomTopic();
+      data.parentAnswer = null;
+      data.answerCommit = null;
+      data.answerSalt = null;
+      data.guesses = null;
+      data.revealStep = 0;
+    };
+
+    let next = (data.turnIndex || 0) + 1;
+    while (next < order.length && isAbsent(data, order[next])) next++;
+
+    if (next >= order.length) {
+      if (!isSurvival && (data.round || 1) < 2) {
+        // クラシックモードは全2周で終了（2周目の完了）
+        let first = 0;
+        while (first < order.length && isAbsent(data, order[first])) first++;
+        if (first >= order.length) first = 0;
+        data.status = "parent_setup";
+        data.round = 2;
+        data.turnIndex = first;
+        resetQuestion();
+      } else {
+        data.status = "round_summary";
+      }
+    } else {
+      data.status = "parent_setup";
+      data.turnIndex = next;
+      resetQuestion();
+    }
+  }
+
+  // ---- ロビー描画 ----
+  function renderLobby(data, isHost) {
+    showView("viewLobby");
+    const players = data.players || {};
+    const lobbyIds = getSortedPlayerIds(players).filter(pid => !players[pid].left);
+    const onlineIds = lobbyIds.filter(pid => isOnline(players[pid]));
+
+    el("lobbyRoomId").textContent = currentRoomId;
+    el("lobbyPlayerCount").textContent = onlineIds.length;
+    el("lobbyPasswordInfo").classList.toggle("hidden", !(data.passwordHash || data.password));
+
+    const listEl = el("lobbyPlayerList");
+    listEl.innerHTML = "";
+    lobbyIds.forEach(pid => {
+      const p = players[pid];
+      const on = isOnline(p);
+      const chip = document.createElement("div");
+      chip.className = "player-chip" + (pid === data.hostId ? " is-parent" : "") + (on ? "" : " is-off");
+      const nameSpan = document.createElement("span");
+      nameSpan.textContent = p.name;
+      chip.appendChild(nameSpan);
+      const addBadge = (text, cls) => {
+        const b = document.createElement("span");
+        b.className = "badge " + cls;
+        b.textContent = text;
+        chip.appendChild(b);
+      };
+      if (pid === data.hostId) addBadge("👑ホスト", "badge-host");
+      if (pid === myId) addBadge("あなた", "badge-me");
+      addBadge(on ? "🟢オンライン" : "⚪オフライン", on ? "badge-on" : "badge-off");
+      listEl.appendChild(chip);
+    });
+
+    const mode = data.mode === "classic" ? "classic" : "survival";
+    document.querySelectorAll(".mode-card").forEach(card => {
+      card.classList.toggle("active", card.dataset.mode === mode);
+      card.classList.toggle("locked", !isHost);
+    });
+    const hostName = players[data.hostId]?.name || "ホスト";
+    el("lobbyModeHostNote").textContent = isHost ? "あなたが選べます（タップで切替）" : `${hostName}さんが選びます`;
+
+    const n = Math.max(2, onlineIds.length);
+    if (mode === "survival") {
+      el("modePreview").innerHTML = `
+        <div>💡 <strong>人数連動バランス（現在 ${n}人）</strong></div>
+        <div>・初期共通資金：<strong style="color:#34d399;">${(1000 * n).toLocaleString()} G</strong>（1,000G × 人数）</div>
+        <div>・ROUND 1 ノルマ：<strong style="color:#fbbf24;">${(2000 * n).toLocaleString()} G</strong>（2,000G × 人数）</div>
+        <div>・資金が足りなくても<strong>自動で借金して上限（MAX）までベット可能！</strong></div>
+        <div>・ラウンドの終わりに「借金0 かつ ノルマ以上」ならクリア。未達ならゲームオーバー</div>`;
+    } else {
+      el("modePreview").innerHTML = `
+        <div>💡 <strong>全2周制（現在 ${n}人 → 全${n * 2}問）</strong></div>
+        <div>・全員が2回ずつ親を担当したら終了し、ポイントランキングで勝者を決定</div>
+        <div>・3連単 5pt ／ 2連単 3pt ／ 3連複 2pt ／ 単勝 1pt ／ ハズレ 0pt</div>
+        <div>・掛け金や借金はありません</div>`;
+    }
+
+    // スタート条件の案内
+    const hint = el("startHint");
+    if (onlineIds.length < 2) {
+      hint.style.color = "#fbbf24";
+      hint.textContent = `⏳ あと${2 - onlineIds.length}人以上集まるとスタートできます`;
+    } else if (isHost) {
+      hint.style.color = "#34d399";
+      hint.textContent = `✅ ${onlineIds.length}人でスタートできます！`;
+    } else {
+      hint.style.color = "#34d399";
+      hint.textContent = `✅ ${onlineIds.length}人が揃っています`;
+    }
+
+    if (isHost) {
+      el("hostSettings").classList.remove("hidden");
+      el("guestLobbyMsg").classList.add("hidden");
+      el("btnStartGame").disabled = onlineIds.length < 2;
+    } else {
+      el("hostSettings").classList.add("hidden");
+      el("guestLobbyMsg").classList.remove("hidden");
+      el("guestLobbyMsg").textContent = `${hostName}さん（ホスト）がゲームを開始するのを待っています...`;
+    }
+  }
+
+  let lastParentTurnKey = "";
+  function renderParentSetupPhase(data, playerIds) {
+    const parentId = playerIds[data.turnIndex || 0];
+    const parentName = data.players[parentId]?.name || "親";
+    const turnKey = turnKeyOf(data);
+
+    if (parentId !== myId) {
+      showView("viewWaitParent");
+      el("waitParentName").textContent = parentName;
+      return;
+    }
+
+    showView("viewParentSetup");
+    if (lastParentTurnKey !== turnKey) {
+      lastParentTurnKey = turnKey;
+      parentPicks = [];
+      isCustomTopicMode = false;
+      el("customTopicBox").classList.add("hidden");
+      el("presetTopicBox").classList.remove("hidden");
+      const randIdx = Math.floor(Math.random() * PRESET_TOPICS.length);
+      el("selectPresetTopic").value = randIdx;
+    }
+    renderParentSetupOptions();
+  }
+
+  function getActiveParentTopic() {
+    if (isCustomTopicMode) {
+      const title = el("inputCustomTitle").value.trim() || "（自由入力のお題）";
+      const options = [];
+      for (let i = 0; i < 8; i++) {
+        const val = el(`customOpt_${i}`).value.trim() || `選択肢 ${LETTERS[i]}`;
+        options.push(val);
+      }
+      return { title, options };
+    } else {
+      const idx = parseInt(el("selectPresetTopic").value, 10) || 0;
+      return PRESET_TOPICS[idx];
+    }
+  }
+
+  function renderParentSetupOptions() {
+    const topic = getActiveParentTopic();
+    el("parentTopicDisplay").textContent = topic.title;
+
+    const grid = el("parentOptionsGrid");
+    grid.innerHTML = "";
+    topic.options.forEach((optText, idx) => {
+      const rankIdx = parentPicks.indexOf(idx);
+      const card = document.createElement("div");
+      card.className = "option-card" + (rankIdx !== -1 ? ` selected-${rankIdx + 1}` : "");
+      card.innerHTML = `
+        <span class="option-letter">${LETTERS[idx]}</span>
+        <span class="option-text">${esc(optText)}</span>
+        ${rankIdx !== -1 ? `<span class="rank-badge rank-${rankIdx + 1}">${rankIdx + 1}位</span>` : ""}
+      `;
+      card.addEventListener("click", () => {
+        const existing = parentPicks.indexOf(idx);
+        if (existing !== -1) {
+          parentPicks.splice(existing, 1);
+        } else if (parentPicks.length < 3) {
+          parentPicks.push(idx);
+        }
+        renderParentSetupOptions();
+      });
+      grid.appendChild(card);
+    });
+
+    [1, 2, 3].forEach(r => {
+      const slotEl = el(`parentSlot${r}`);
+      const pickIdx = parentPicks[r - 1];
+      const valEl = slotEl.querySelector(".pick-slot-val");
+      if (pickIdx !== undefined) {
+        slotEl.classList.add("filled");
+        valEl.textContent = `${LETTERS[pickIdx]}. ${topic.options[pickIdx]}`;
+      } else {
+        slotEl.classList.remove("filled");
+        valEl.textContent = "未選択";
+      }
+    });
+
+    el("btnLockParentAnswer").disabled = parentPicks.length !== 3;
+  }
+
+  el("selectPresetTopic").addEventListener("change", () => {
+    parentPicks = [];
+    renderParentSetupOptions();
+  });
+  el("btnRandomTopic").addEventListener("click", () => {
+    isCustomTopicMode = false;
+    el("customTopicBox").classList.add("hidden");
+    el("presetTopicBox").classList.remove("hidden");
+    const randIdx = Math.floor(Math.random() * PRESET_TOPICS.length);
+    el("selectPresetTopic").value = randIdx;
+    parentPicks = [];
+    renderParentSetupOptions();
+  });
+  el("btnToggleCustomTopic").addEventListener("click", () => {
+    isCustomTopicMode = !isCustomTopicMode;
+    el("customTopicBox").classList.toggle("hidden", !isCustomTopicMode);
+    el("presetTopicBox").classList.toggle("hidden", isCustomTopicMode);
+    parentPicks = [];
+    renderParentSetupOptions();
+  });
+  el("btnFillPlayerNames").addEventListener("click", () => {
+    if (!latestRoomData || !latestRoomData.players) return;
+    const pNames = getSortedPlayerIds(latestRoomData.players)
+      .filter(pid => !latestRoomData.players[pid].left)
+      .map(pid => latestRoomData.players[pid].name);
+    for (let i = 0; i < 8; i++) {
+      el(`customOpt_${i}`).value = pNames[i] ? `${pNames[i]}` : `選択肢 ${LETTERS[i]}`;
+    }
+    renderParentSetupOptions();
+  });
+
+  // 親の確定：DBには正解そのものではなく「ハッシュ（コミット）」だけを書く。正解は親の端末にだけ保存
+  el("btnLockParentAnswer").addEventListener("click", async () => {
+    if (parentPicks.length !== 3) return;
+    const btn = el("btnLockParentAnswer");
+    btn.disabled = true;
+    try {
+      const topic = getActiveParentTopic();
+      const picks = parentPicks.slice();
+      const salt = randomSalt();
+      const commit = await hashText(`${salt}:${picks.join(",")}`);
+      saveSecret({ picks, salt, commit });
+      await update(roomRef, {
+        status: "betting",
+        currentTopic: topic,
+        parentAnswer: null,
+        answerCommit: commit,
+        answerSalt: null,
+        guesses: null,
+        revealStep: 0
+      });
+    } finally {
+      btn.disabled = parentPicks.length !== 3;
+    }
+  });
+
+  let lastBetTurnKey = "";
+  function renderBettingPhase(data, playerIds, isHost, isSurvival) {
+    showView("viewBetting");
+    const parentId = playerIds[data.turnIndex || 0];
+    const parentName = data.players[parentId]?.name || "親";
+    const isParent = parentId === myId;
+    const topic = data.currentTopic || PRESET_TOPICS[0];
+    const turnKey = turnKeyOf(data);
+
+    el("betPhaseParentName").textContent = parentName;
+    el("betTopicTitle").textContent = topic.title;
+
+    el("oddsBadge3Tan").textContent = isSurvival ? "3連単 ×10倍" : "3連単 5pt";
+    el("oddsBadge2Tan").textContent = isSurvival ? "2連単 ×5倍" : "2連単 3pt";
+    el("oddsBadge3Puku").textContent = isSurvival ? "3連複 ×3倍" : "3連複 2pt";
+    el("oddsBadge1Tan").textContent = isSurvival ? "単勝 ×2倍" : "単勝 1pt";
+
+    const minBet = data.minBet || 100;
+    const maxBet = data.maxBet || 1000;
+    const slider = el("sliderBetAmount");
+
+    if (lastBetTurnKey !== turnKey) {
+      lastBetTurnKey = turnKey;
+      childPicks = [];
+      slider.min = minBet;
+      slider.max = maxBet;
+      // 全ラウンドで (上限 - 下限) が100の倍数のため、step=100 なら上限(MAX)にも必ず到達できる
+      slider.step = 100;
+      slider.value = minBet;
+      el("displayMyBet").textContent = minBet.toLocaleString();
+    }
+
+    const mySubmittedGuess = data.guesses && data.guesses[myId];
+    const secret = isParent ? getValidSecret(data) : null;
+
+    if (isParent) {
+      el("childBetControls").classList.add("hidden");
+      el("parentWatchControls").classList.remove("hidden");
+      if (secret) {
+        const ans = secret.picks;
+        el("parentSecretAnswerView").innerHTML = `
+          あなたの正解：
+          🥇 <strong>${LETTERS[ans[0]]}.${esc(topic.options[ans[0]])}</strong> ／
+          🥈 <strong>${LETTERS[ans[1]]}.${esc(topic.options[ans[1]])}</strong> ／
+          🥉 <strong>${LETTERS[ans[2]]}.${esc(topic.options[ans[2]])}</strong>
+        `;
+        el("btnSkipTurn").classList.add("hidden");
+      } else {
+        // 別の端末から復帰した等で、この端末に正解が残っていない場合
+        el("parentSecretAnswerView").innerHTML = `⚠️ この端末には今回の正解が保存されていません（正解は親の端末にだけ保存されます）。このターンをスキップして次の親に進めてください。`;
+        el("btnSkipTurn").classList.remove("hidden");
+      }
+    } else {
+      el("childBetControls").classList.remove("hidden");
+      el("parentWatchControls").classList.add("hidden");
+      el("betAmountSection").classList.toggle("hidden", !isSurvival);
+      renderChildGuessGrid(topic, !!mySubmittedGuess);
+    }
+
+    const statusList = el("guessStatusList");
+    statusList.innerHTML = "";
+    const childIds = playerIds.filter(pid => pid !== parentId);
+    let submittedCount = 0;
+    // 離席中（猶予切れ）で未提出の人は待たない
+    const requiredIds = childIds.filter(cid => (data.guesses && data.guesses[cid]) || !isAbsent(data, cid));
+
+    childIds.forEach(cid => {
+      const p = data.players[cid];
+      const g = data.guesses && data.guesses[cid];
+      if (g) submittedCount++;
+      const chip = document.createElement("div");
+      const away = !g && isAbsent(data, cid);
+      chip.className = "player-chip" + (g ? " is-done" : "") + (away ? " is-off" : "");
+      chip.textContent = g
+        ? `✅ ${p?.name || "子"} ${isSurvival ? `(${g.bet.toLocaleString()}G)` : ""}`
+        : away
+          ? `⚪ ${p?.name || "子"} (離席中・待たずに進行できます)`
+          : `💭 ${p?.name || "子"} (考え中...)`;
+      statusList.appendChild(chip);
+    });
+
+    const allSubmitted = requiredIds.length > 0 && requiredIds.every(cid => data.guesses && data.guesses[cid]);
+    // 正解を知っているのは親だけなので、結果発表に進めるのは親のみ
+    if (allSubmitted && isParent && secret) {
+      el("btnForceReveal").classList.remove("hidden");
+      el("waitRevealMsg").classList.add("hidden");
+    } else {
+      el("btnForceReveal").classList.add("hidden");
+      el("waitRevealMsg").classList.toggle("hidden", isParent || !allSubmitted);
+    }
+  }
+
+  function renderChildGuessGrid(topic, isLocked) {
+    const grid = el("childOptionsGrid");
+    grid.innerHTML = "";
+    topic.options.forEach((optText, idx) => {
+      const rankIdx = childPicks.indexOf(idx);
+      const card = document.createElement("div");
+      card.className = "option-card" + (rankIdx !== -1 ? ` selected-${rankIdx + 1}` : "");
+      card.innerHTML = `
+        <span class="option-letter">${LETTERS[idx]}</span>
+        <span class="option-text">${esc(optText)}</span>
+        ${rankIdx !== -1 ? `<span class="rank-badge rank-${rankIdx + 1}">${rankIdx + 1}位</span>` : ""}
+      `;
+      if (!isLocked) {
+        card.addEventListener("click", () => {
+          const existing = childPicks.indexOf(idx);
+          if (existing !== -1) {
+            childPicks.splice(existing, 1);
+          } else if (childPicks.length < 3) {
+            childPicks.push(idx);
+          }
+          renderChildGuessGrid(topic, false);
+        });
+      }
+      grid.appendChild(card);
+    });
+
+    [1, 2, 3].forEach(r => {
+      const slotEl = el(`childSlot${r}`);
+      const pickIdx = childPicks[r - 1];
+      const valEl = slotEl.querySelector(".pick-slot-val");
+      if (pickIdx !== undefined) {
+        slotEl.classList.add("filled");
+        valEl.textContent = `${LETTERS[pickIdx]}. ${topic.options[pickIdx]}`;
+      } else {
+        slotEl.classList.remove("filled");
+        valEl.textContent = "未選択";
+      }
+    });
+
+    const btn = el("btnSubmitGuess");
+    if (isLocked) {
+      btn.disabled = true;
+      btn.textContent = "✅ 予想を提出済みです（他の人を待っています）";
+    } else {
+      btn.disabled = childPicks.length !== 3;
+      btn.textContent = "この予想と掛け金でロックする！";
+    }
+  }
+
+  el("sliderBetAmount").addEventListener("input", (e) => {
+    el("displayMyBet").textContent = parseInt(e.target.value, 10).toLocaleString();
+  });
+  el("btnBetMin").addEventListener("click", () => {
+    const min = parseInt(el("sliderBetAmount").min, 10);
+    el("sliderBetAmount").value = min;
+    el("displayMyBet").textContent = min.toLocaleString();
+  });
+  el("btnBetHalf").addEventListener("click", () => {
+    const min = parseInt(el("sliderBetAmount").min, 10);
+    const max = parseInt(el("sliderBetAmount").max, 10);
+    const mid = Math.round(((min + max) / 2) / 100) * 100;
+    el("sliderBetAmount").value = mid;
+    el("displayMyBet").textContent = mid.toLocaleString();
+  });
+  el("btnBetMax").addEventListener("click", () => {
+    const max = parseInt(el("sliderBetAmount").max, 10);
+    el("sliderBetAmount").value = max;
+    el("displayMyBet").textContent = max.toLocaleString();
+  });
+
+  el("btnSubmitGuess").addEventListener("click", async () => {
+    if (childPicks.length !== 3 || !currentRoomId) return;
+    if (!latestRoomData || latestRoomData.status !== "betting") return;
+    const betVal = parseInt(el("sliderBetAmount").value, 10) || 100;
+    await set(ref(db, `rooms/${currentRoomId}/guesses/${myId}`), {
+      picks: childPicks,
+      bet: betVal,
+      submittedAt: Date.now()
+    });
+  });
+
+  el("btnForceReveal").addEventListener("click", async () => {
+    if (!latestRoomData) return;
+    const secret = getValidSecret(latestRoomData);
+    if (!secret) return;
+    el("btnForceReveal").disabled = true;
+    try {
+      await transitionToResult(secret);
+    } finally {
+      el("btnForceReveal").disabled = false;
+    }
+  });
+
+  // 正解が出せない親のためのスキップ
+  el("btnSkipTurn").addEventListener("click", async () => {
+    await runTransaction(roomRef, (d) => {
+      if (!d) return d;
+      if (d.status !== "betting") return;
+      advanceTurn(d);
+      return d;
+    });
+  });
+
+  function judgeYaku(picks, ans, isSurvival) {
+    const [p1, p2, p3] = picks;
+    const [a1, a2, a3] = ans;
+
+    if (p1 === a1 && p2 === a2 && p3 === a3) {
+      return { key: "sanrentan", name: "3連単", mult: 10, pts: 5, badge: "yaku-sanrentan" };
+    }
+    if (p1 === a1 && p2 === a2) {
+      return { key: "nirentan", name: "2連単", mult: 5, pts: 3, badge: "yaku-nirentan" };
+    }
+    const pickSet = new Set([p1, p2, p3]);
+    if (pickSet.has(a1) && pickSet.has(a2) && pickSet.has(a3)) {
+      return { key: "sanrenpuku", name: "3連複", mult: 3, pts: 2, badge: "yaku-sanrenpuku" };
+    }
+    if (p1 === a1) {
+      return { key: "tansho", name: "単勝", mult: 2, pts: 1, badge: "yaku-tansho" };
+    }
+    return { key: "miss", name: "ハズレ", mult: 0, pts: 0, badge: "yaku-miss" };
+  }
+
+  // 結果確定＆精算（親のみ実行：正解を知っているのは親だけ）。
+  // 「status が betting」かつ「コミットが一致」のときだけ1回実行し、このとき初めて正解をDBに公開する。
+  async function transitionToResult(secret) {
+    await runTransaction(roomRef, (data) => {
+      if (!data) return data;
+      if (data.status !== "betting" || data.answerCommit !== secret.commit) return; // 既に精算済み等 → 中断
+
+      const playerIds = data.playerOrder || getSortedPlayerIds(data.players);
+      const parentId = playerIds[data.turnIndex || 0];
+      const childIds = playerIds.filter(pid => pid !== parentId);
+      const ans = secret.picks;
+      const guesses = data.guesses || {};
+      const isSurvival = data.mode !== "classic";
+
+      let totalBet = 0;
+      let totalPayout = 0;
+      const updatedPlayers = { ...data.players };
+
+      childIds.forEach(cid => {
+        const g = guesses[cid];
+        if (!g) return;
+        const bet = g.bet || 0;
+        const yaku = judgeYaku(g.picks, ans, isSurvival);
+        totalBet += bet;
+        totalPayout += isSurvival ? (bet * yaku.mult) : 0;
+
+        if (updatedPlayers[cid]) {
+          updatedPlayers[cid] = {
+            ...updatedPlayers[cid],
+            score: (updatedPlayers[cid].score || 0) + yaku.pts
+          };
+        }
+      });
+
+      let finalFunds = data.funds || 0;
+      let finalDebt = data.debt || 0;
+      let settlement = null;
+
+      if (isSurvival) {
+        const prevFunds = data.funds || 0;
+        const prevDebt = data.debt || 0;
+
+        let fundsAfterBet = 0;
+        let borrowedThisTurn = 0;
+        if (prevFunds >= totalBet) {
+          fundsAfterBet = prevFunds - totalBet;
+          borrowedThisTurn = 0;
+        } else {
+          fundsAfterBet = 0;
+          borrowedThisTurn = totalBet - prevFunds;
+        }
+
+        const tempDebt = prevDebt + borrowedThisTurn;
+        const totalAvailableCash = fundsAfterBet + totalPayout;
+
+        let repaidAmount = 0;
+        if (totalAvailableCash >= tempDebt) {
+          repaidAmount = tempDebt;
+          finalDebt = 0;
+          finalFunds = totalAvailableCash - tempDebt;
+        } else {
+          repaidAmount = totalAvailableCash;
+          finalDebt = tempDebt - totalAvailableCash;
+          finalFunds = 0;
+        }
+
+        settlement = {
+          prevFunds,
+          prevDebt,
+          totalBet,
+          borrowedThisTurn,
+          totalPayout,
+          repaidAmount,
+          finalFunds,
+          finalDebt
+        };
+      }
+
+      data.status = "result";
+      data.revealStep = 0;
+      data.parentAnswer = ans;
+      data.answerSalt = secret.salt;
+      data.funds = finalFunds;
+      data.debt = finalDebt;
+      data.players = updatedPlayers;
+      data.lastSettlement = settlement;
+      return data;
+    });
+  }
+
+  // 正解が出題時のコミット（ハッシュ）と一致するか検証（親が後から答えを変えていないことの確認）
+  const verifyCache = {};
+  async function verifyAnswer(data) {
+    if (!data.answerCommit || !data.parentAnswer || !data.answerSalt) return null;
+    const k = data.answerCommit;
+    if (!(k in verifyCache)) {
+      verifyCache[k] = (await hashText(`${data.answerSalt}:${data.parentAnswer.join(",")}`)) === k;
+    }
+    return verifyCache[k];
+  }
+
+  function renderResultPhase(data, playerIds, isHost, isSurvival) {
+    showView("viewResult");
+    const parentId = playerIds[data.turnIndex || 0];
+    const isParent = parentId === myId;
+    const topic = data.currentTopic || PRESET_TOPICS[0];
+    const ans = data.parentAnswer || [0, 1, 2];
+    const step = data.revealStep || 0;
+
+    el("resParentName").textContent = data.players[parentId]?.name || "親";
+    el("resTopicTitle").textContent = topic.title;
+
+    const box3 = el("revealBox3");
+    const box2 = el("revealBox2");
+    const box1 = el("revealBox1");
+
+    box3.className = "reveal-box" + (step >= 1 ? " revealed-3" : "");
+    el("revealText3").textContent = step >= 1 ? `${LETTERS[ans[2]]}. ${topic.options[ans[2]]}` : "？？？";
+
+    box2.className = "reveal-box" + (step >= 2 ? " revealed-2" : "");
+    el("revealText2").textContent = step >= 2 ? `${LETTERS[ans[1]]}. ${topic.options[ans[1]]}` : "？？？";
+
+    box1.className = "reveal-box" + (step >= 3 ? " revealed-1" : "");
+    el("revealText1").textContent = step >= 3 ? `${LETTERS[ans[0]]}. ${topic.options[ans[0]]}` : "？？？";
+
+    if (step >= 3) {
+      verifyAnswer(data).then(ok => {
+        el("verifyNote").textContent = ok === null ? "" : ok ? "✅ 正解は出題時に確定済みです（改ざんなし）" : "⚠️ 正解が出題時の内容と一致しません";
+      });
+    } else {
+      el("verifyNote").textContent = "";
+    }
+
+    const btnStep = el("btnNextRevealStep");
+    if (step < 3 && (isParent || isHost)) {
+      el("revealControlBtns").classList.remove("hidden");
+      if (step === 0) btnStep.textContent = "🥁 第3位を発表する！";
+      if (step === 1) btnStep.textContent = "🥁 第2位を発表する！";
+      if (step === 2) btnStep.textContent = "🔥 第1位を発表して精算する！！";
+    } else {
+      el("revealControlBtns").classList.add("hidden");
+    }
+
+    el("thBetCol").textContent = isSurvival ? "賭け金" : "獲得pt";
+    const tbody = el("resultTableBody");
+    tbody.innerHTML = "";
+    const childIds = playerIds.filter(pid => pid !== parentId);
+    const guesses = data.guesses || {};
+
+    childIds.forEach(cid => {
+      const p = data.players[cid];
+      const g = guesses[cid];
+      if (!g) return;
+      const picks = g.picks || [0, 1, 2];
+      const yaku = judgeYaku(picks, ans, isSurvival);
+      const payout = isSurvival ? ((g.bet || 0) * yaku.mult) : yaku.pts;
+
+      const pickStr = picks.map((idx, i) => `${i + 1}位:${LETTERS[idx]}(${esc(topic.options[idx])})`).join(" → ");
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td style="font-weight:700;">${esc(p?.name || "プレイヤー")}</td>
+        <td style="font-size:0.82rem;">${pickStr}</td>
+        <td>${isSurvival ? `${(g.bet || 0).toLocaleString()} G` : `${yaku.pts} pt`}</td>
+        <td>
+          ${step >= 3
+            ? `<span class="yaku-badge ${yaku.badge}">${yaku.name}</span>
+               <strong style="margin-left:6px; color:${payout > 0 ? '#34d399' : '#94a3b8'};">
+                 ${isSurvival ? `+${payout.toLocaleString()} G` : `+${payout} pt`}
+               </strong>`
+            : `<span style="color:var(--text-muted);">発表待ち...</span>`
+          }
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    const stBox = el("settlementBox");
+    if (step >= 3 && isSurvival && data.lastSettlement) {
+      stBox.classList.remove("hidden");
+      const s = data.lastSettlement;
+      el("settlementDetails").innerHTML = `
+        <div>・ベット前の資金 / 借金：<strong>${s.prevFunds.toLocaleString()} G</strong> ／ 借金 <strong style="color:#f87171;">${s.prevDebt.toLocaleString()} G</strong></div>
+        <div>・今回のチーム総ベット額：<strong>${s.totalBet.toLocaleString()} G</strong> ${s.borrowedThisTurn > 0 ? `<span style="color:#f87171;">（+${s.borrowedThisTurn.toLocaleString()} G を新規借金！）</span>` : ""}</div>
+        <div>・今回の総配当獲得額：<strong style="color:#fbbf24;">+${s.totalPayout.toLocaleString()} G</strong></div>
+        ${s.repaidAmount > 0 ? `<div>・借金の即時返済：<strong style="color:#60a5fa;">-${s.repaidAmount.toLocaleString()} G 返済！</strong></div>` : ""}
+        <hr style="border:none; border-top:1px solid rgba(255,255,255,0.15); margin:8px 0;">
+        <div style="font-size:1.08rem;">
+          👉 精算後の共通資金：<strong style="color:#34d399;">${s.finalFunds.toLocaleString()} G</strong> ／
+          残り借金：<strong style="color:${s.finalDebt > 0 ? '#f87171' : '#94a3b8'};">${s.finalDebt.toLocaleString()} G</strong>
+        </div>
+      `;
+    } else {
+      stBox.classList.add("hidden");
+    }
+
+    const btnNext = el("btnNextTurn");
+    if (step >= 3 && (isParent || isHost)) {
+      btnNext.classList.remove("hidden");
+      // 実際に次に進む先（不在の人を飛ばした結果）で文言を決める
+      const order = data.playerOrder || playerIds;
+      let nextIdx = (data.turnIndex || 0) + 1;
+      while (nextIdx < order.length && isAbsent(data, order[nextIdx])) nextIdx++;
+      const isLastTurnInRound = nextIdx >= order.length;
+      btnNext.textContent = isLastTurnInRound
+        ? (isSurvival ? "📊 ラウンド最終判定へ進む！" : (data.round >= 2 ? "🏆 最終結果発表へ進む！" : "👑 クラシック第1周終了・後半戦へ！"))
+        : "次の親のターンへ進む ➡️";
+    } else {
+      btnNext.classList.add("hidden");
+    }
+  }
+
+  // 発表ステップを進める（親とホストが同時に押しても1段階ずつしか進まないようトランザクション化）
+  el("btnNextRevealStep").addEventListener("click", async () => {
+    if (!latestRoomData) return;
+    const expectedStep = latestRoomData.revealStep || 0;
+    await runTransaction(roomRef, (data) => {
+      if (!data) return data;
+      if (data.status !== "result" || (data.revealStep || 0) !== expectedStep) return; // 既に進行済み → 中断
+      data.revealStep = expectedStep + 1;
+      return data;
+    });
+  });
+
+  // 次の親のターンへ（親が離脱していても、ホストがここから進められる／不在の人は自動で飛ばす）
+  el("btnNextTurn").addEventListener("click", async () => {
+    if (!latestRoomData) return;
+    await runTransaction(roomRef, (data) => {
+      if (!data) return data;
+      if (data.status !== "result") return; // 二重クリック対策
+      advanceTurn(data);
+      return data;
+    });
+  });
+
+  function renderRoundSummaryPhase(data, playerIds, isHost, isSurvival) {
+    showView("viewRoundSummary");
+    const round = data.round || 1;
+    const funds = data.funds || 0;
+    const debt = data.debt || 0;
+    const quota = data.quota || 0;
+
+    if (isSurvival) {
+      const isClear = debt === 0 && funds >= quota;
+      const nextSpec = getRoundSpec(round + 1, playerIds.length);
+
+      if (isClear) {
+        el("summaryTitle").textContent = `🎊 ROUND ${round} CLEAR!!`;
+        el("summaryTitle").style.color = "#34d399";
+        el("summarySubtitle").textContent = `見事ノルマを達成し、ROUND ${round + 1} への進出が決定しました！`;
+        el("summaryStatsBox").innerHTML = `
+          <div>✅ 現在の共通資金：<strong style="color:#34d399;">${funds.toLocaleString()} G</strong>（ノルマ ${quota.toLocaleString()} G 達成！）</div>
+          <div>✅ 現在の借金：<strong>0 G</strong></div>
+          <hr style="border:none; border-top:1px solid var(--card-border); margin:10px 0;">
+          <div style="color:var(--accent-gold); font-weight:700;">🔥 次ラウンド（ROUND ${round + 1}）の条件：</div>
+          <div>・クリアノルマ：<strong>${nextSpec.quota.toLocaleString()} G</strong></div>
+          <div>・賭け金レート：下限 <strong>${nextSpec.minBet.toLocaleString()} G</strong> 〜 上限 <strong>${nextSpec.maxBet.toLocaleString()} G</strong></div>
+        `;
+        el("btnProceedNextRound").classList.remove("hidden");
+        el("btnProceedNextRound").textContent = "次のラウンドへ突入する！🔥";
+      } else {
+        el("summaryTitle").textContent = `💀 GAME OVER...`;
+        el("summaryTitle").style.color = "#f87171";
+        el("summarySubtitle").textContent = `ROUND ${round} のノルマ達成ならず...！`;
+        el("summaryStatsBox").innerHTML = `
+          <div>🏆 最終到達記録：<strong>ROUND ${round}</strong>（クリアラウンド数：${round - 1}）</div>
+          <div>💰 最終共通資金：<strong>${funds.toLocaleString()} G</strong>（目標ノルマ：${quota.toLocaleString()} G）</div>
+          <div>💸 最終残り借金：<strong style="color:#f87171;">${debt.toLocaleString()} G</strong></div>
+        `;
+        el("btnProceedNextRound").classList.add("hidden");
+      }
+    } else {
+      el("summaryTitle").textContent = `🏆 クラシック対戦 最終結果発表！`;
+      el("summaryTitle").style.color = "#fbbf24";
+      el("summarySubtitle").textContent = "全2周（全員が2回親を担当）の総合優勝者はこちら！";
+
+      const sorted = [...playerIds].sort((a, b) => (data.players[b]?.score || 0) - (data.players[a]?.score || 0));
+      el("summaryStatsBox").innerHTML = sorted.map((pid, idx) => {
+        const p = data.players[pid];
+        const medal = idx === 0 ? "🥇" : idx === 1 ? "🥈" : idx === 2 ? "🥉" : "👤";
+        return `<div><strong>${medal} ${idx + 1}位：${esc(p?.name)}</strong> — <span style="color:#fbbf24; font-weight:800;">${p?.score || 0} pt</span></div>`;
+      }).join("");
+      el("btnProceedNextRound").classList.add("hidden");
+    }
+
+    el("btnStartRematch").classList.remove("hidden");
+    el("summaryHostActions").classList.toggle("hidden", !isHost);
+    el("summaryGuestWait").classList.toggle("hidden", isHost);
+  }
+
+  el("btnProceedNextRound").addEventListener("click", async () => {
+    if (!latestRoomData) return;
+    const playerIds = latestRoomData.playerOrder || getSortedPlayerIds(latestRoomData.players);
+    const nextRound = (latestRoomData.round || 1) + 1;
+    const nextSpec = getRoundSpec(nextRound, playerIds.length);
+
+    // 最初の親は、オンラインの先頭の人
+    let first = 0;
+    while (first < playerIds.length && isAbsent(latestRoomData, playerIds[first])) first++;
+    if (first >= playerIds.length) first = 0;
+
+    await update(roomRef, {
+      status: "parent_setup",
+      round: nextRound,
+      turnIndex: first,
+      quota: nextSpec.quota,
+      minBet: nextSpec.minBet,
+      maxBet: nextSpec.maxBet,
+      qid: Date.now(),
+      currentTopic: randomTopic(),
+      parentAnswer: null,
+      answerCommit: null,
+      answerSalt: null,
+      guesses: null,
+      revealStep: 0
+    });
+  });
+
+  // 連戦（メンバーとスコアを引き継いで再スタート）
+  el("btnStartRematch").addEventListener("click", async () => {
+    if (!latestRoomData) return;
+    // 現在オンラインの参加者で再編成（途中参加の観戦者も含める）。スコアは引き継ぐ
+    const players = latestRoomData.players || {};
+    const playerIds = getSortedPlayerIds(players).filter(pid => isOnline(players[pid]));
+    if (playerIds.length < 2) {
+      alert("2人以上（オンライン）必要です！");
+      return;
+    }
+    const n = playerIds.length;
+    const spec = getRoundSpec(1, n);
+
+    await update(roomRef, {
+      status: "parent_setup",
+      round: 1,
+      turnIndex: 0,
+      playerOrder: playerIds,
+      funds: 1000 * n,
+      debt: 0,
+      quota: spec.quota,
+      minBet: spec.minBet,
+      maxBet: spec.maxBet,
+      qid: Date.now(),
+      currentTopic: randomTopic(),
+      parentAnswer: null,
+      answerCommit: null,
+      answerSalt: null,
+      guesses: null,
+      revealStep: 0,
+      lastSettlement: null
+    });
+  });
+
+  el("btnBackToLobby").addEventListener("click", async () => {
+    if (!latestRoomData) return;
+    const upd = {
+      status: "lobby",
+      round: 1,
+      turnIndex: 0,
+      playerOrder: null,
+      parentAnswer: null,
+      answerCommit: null,
+      answerSalt: null,
+      guesses: null
+    };
+    // 退出済みの人はロビーに戻るタイミングで片付ける
+    Object.keys(latestRoomData.players || {}).forEach(pid => {
+      const p = latestRoomData.players[pid];
+      if (!p || p.left) upd[`players/${pid}`] = null;
+    });
+    await update(roomRef, upd);
+  });
+</script>
+</body>
+</html>
